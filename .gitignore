@@ -1,0 +1,23 @@
+# Raw portal exports and screenshots (may contain PII / pricing)
+**/data/raw/
+**/screenshots/
+*.xlsx
+*.xls
+*.csv
+!**/data/*.summary.csv
+
+# OS / editor
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+.venv/
+*.pyc
+
+# Env / secrets
+.env
+*.env
