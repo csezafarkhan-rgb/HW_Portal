@@ -21,3 +21,6 @@ __pycache__/
 # Env / secrets
 .env
 *.env
+
+# Node
+node_modules/

@@ -28,6 +28,16 @@ templates/       Reusable report / portal-map templates for new portals
 4. **Operations** — orders, fulfillment, returns, chargebacks, inventory
 5. **Findings & recommended actions**
 
+## Web viewer (Render)
+
+`server.js` serves `<portal>/reports/*.md|html` behind HTTP Basic auth — nothing else in the repo is exposed.
+Deployed as a Render web service (see `render.yaml`) with `APP_USER` / `APP_PASSWORD` env vars set in the Render dashboard.
+
+```bash
+npm install
+APP_USER=me APP_PASSWORD=secret npm start   # http://localhost:3000
+```
+
 ## Data handling
 
 Raw exports and screenshots can contain customer PII, pricing and cost data. They stay local and are excluded from git. Keep this repository **private**.

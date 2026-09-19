@@ -1,0 +1,16 @@
+{
+  "name": "hw-portals",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HomeWeavers marketplace portal analysis reports (password-protected viewer)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "marked": "^15.0.0"
+  }
+}
