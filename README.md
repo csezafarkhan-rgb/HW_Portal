@@ -28,6 +28,19 @@ templates/       Reusable report / portal-map templates for new portals
 4. **Operations** — orders, fulfillment, returns, chargebacks, inventory
 5. **Findings & recommended actions**
 
+## How a portal's analysis is built
+
+```
+<portal>/data/raw/*.csv        Portal exports (local only, not committed)
+scripts/<portal>-details.js    → <portal>/details/*.json   click-through SKU list per check (+ index.json)
+scripts/<portal>-plan.js       → <portal>/analyzers.json   scores, checks, findings, ranked growth plan
+<portal>/playbook.json         Best-solution steps + "Fix in portal" link per check
+analyzers.js                   The analyzers and checklists every portal is scored on
+templates/analyzer-rubric.md   How scores are calculated
+```
+
+Refresh Wayfair after new exports: `node scripts/wayfair-details.js && node scripts/wayfair-plan.js`
+
 ## Web viewer (Render)
 
 `server.js` serves `<portal>/reports/*.md|html` behind a login page (signed session cookie, 7-day sessions, 10 failed attempts per IP per 15 min) — nothing else in the repo is exposed. Changing `APP_PASSWORD` signs everyone out.

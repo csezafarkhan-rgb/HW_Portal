@@ -4,6 +4,7 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
+const zlib = require('node:zlib');
 const { marked } = require('marked');
 const PORTALS = require('./portals');
 const ANALYZERS = require('./analyzers');
@@ -172,8 +173,9 @@ function listPortals() {
     .filter(d => fs.existsSync(path.join(ROOT, d.name, 'reports')))
     .map(d => ({ slug: d.name, name: titleCase(d.name), channel: '', from: '#57534E', to: '#A8A29E', ink: '#fff' }));
   return [...PORTALS, ...extra].map(p => {
-    const started = fs.existsSync(path.join(ROOT, p.slug, 'reports'));
-    return { ...p, started, reports: started ? listReports(p.slug) : [], analysis: loadAnalysis(p.slug) };
+    const reports = fs.existsSync(path.join(ROOT, p.slug, 'reports')) ? listReports(p.slug) : [];
+    const started = reports.length > 0 || fs.existsSync(path.join(ROOT, p.slug, 'analyzers.json'));
+    return { ...p, started, reports, analysis: loadAnalysis(p.slug), details: loadDetailsIndex(p.slug), playbook: loadPlaybook(p.slug) };
   });
 }
 
@@ -183,13 +185,19 @@ function listReports(portal) {
     .sort();
 }
 
-function loadAnalysis(slug) {
+function readJson(file, fallback) {
   try {
-    return JSON.parse(fs.readFileSync(path.join(ROOT, slug, 'analyzers.json'), 'utf8'));
+    return JSON.parse(fs.readFileSync(file, 'utf8'));
   } catch {
-    return { analyzers: {} };
+    return fallback;
   }
 }
+
+const loadAnalysis = slug => readJson(path.join(ROOT, slug, 'analyzers.json'), { analyzers: {} });
+// <portal>/details/index.json → { "<analyzer>.<check>": { title, count } } — lists behind each check (built by scripts/*-details.js)
+const loadDetailsIndex = slug => readJson(path.join(ROOT, slug, 'details', 'index.json'), {});
+// <portal>/playbook.json → { links: {…}, fixes: { "<analyzer>.<check>": { solution:[…], link, linkLabel } } }
+const loadPlaybook = slug => readJson(path.join(ROOT, slug, 'playbook.json'), { fixes: {} });
 
 function initials(name) {
   return name.replace(/'/g, '').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
@@ -287,13 +295,106 @@ function checkCounts(analysis) {
   return counts;
 }
 
-function checksTable(a, r) {
+const safeUrl = u => (/^https:\/\//.test(u || '') ? u : '');
+
+// Each check is a row; when it has a SKU list or a fix playbook it expands (click) to show them.
+function checksTable(a, r, p) {
   const rows = a.checks.map(c => {
     const res = r?.checks?.[c.id] || {};
     const st = checkState(res.status);
-    return `<tr><td><span class="cmark ${st.cls}" title="${st.label}">${st.mark}</span></td><td>${escapeHtml(c.name)}${res.note ? `<div class="cnote">${escapeHtml(res.note)}</div>` : ''}</td><td class="cval">${res.value != null ? escapeHtml(String(res.value)) : '<span class="muted">—</span>'}</td></tr>`;
+    const key = `${a.key}.${c.id}`;
+    const list = p?.details?.[key];
+    const fix = p?.playbook?.fixes?.[key];
+    const link = safeUrl(fix?.link || p?.playbook?.links?.[a.key]);
+    const head = `<span class="cmark ${st.cls}" title="${st.label}">${st.mark}</span>
+    <span class="cmain">${escapeHtml(c.name)}${res.note ? `<span class="cnote">${escapeHtml(res.note)}</span>` : ''}</span>
+    <span class="cval">${res.value != null ? escapeHtml(String(res.value)) : '<span class="muted">—</span>'}</span>`;
+    if (!list && !fix) return `<div class="check">${head}</div>`;
+    const chips = [
+      list ? `<span class="chip">${list.count.toLocaleString('en-US')} ${list.count === 1 ? 'row' : 'rows'}</span>` : '',
+      fix && res.status && res.status !== 'pass' ? '<span class="chip fixchip">How to fix</span>' : '',
+    ].join('');
+    const solution = fix?.solution?.length ? `<div class="fix"><strong>${res.status === 'pass' ? 'Keep it healthy' : 'Best solution'}</strong><ol>${fix.solution.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ol>${fix.impact ? `<p class="impact">Expected impact: ${escapeHtml(fix.impact)}</p>` : ''}</div>` : '';
+    const actions = link ? `<a class="btn" href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(fix?.linkLabel || 'Fix in portal')} ↗</a>` : '';
+    return `<details class="check"${list ? ` data-src="/${encodeURIComponent(p.slug)}/details/${encodeURIComponent(key)}.json"` : ''}>
+  <summary>${head}<span class="chips">${chips}<span class="caret" aria-hidden="true">▸</span></span></summary>
+  <div class="cbody">${solution}${actions ? `<div class="cactions">${actions}</div>` : ''}${list ? '<div class="dl" aria-live="polite"><p class="muted">Loading…</p></div>' : ''}</div>
+</details>`;
   }).join('');
-  return `<table class="checks"><tbody>${rows}</tbody></table>`;
+  return `<div class="checks">${rows}</div>`;
+}
+
+// Loads a check's SKU list on first open; filter, sort, show-more and CSV download all run client-side.
+const CHECK_SCRIPT = `<script>
+(function () {
+  var PAGE = 200;
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function num(s) { var n = parseFloat(String(s).replace(/[$,%★]/g, '')); return isNaN(n) ? null : n; }
+  function csv(d) {
+    var q = function (v) { v = v == null ? '' : String(v); return /[",\\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    return [d.columns].concat(d.rows).map(function (r) { return r.map(q).join(','); }).join('\\n');
+  }
+  function render(box, d, state) {
+    var q = state.q.toLowerCase();
+    var rows = q ? d.rows.filter(function (r) { return r.join(' ').toLowerCase().indexOf(q) >= 0; }) : d.rows.slice();
+    if (state.col != null) rows.sort(function (a, b) {
+      var x = a[state.col], y = b[state.col], nx = num(x), ny = num(y);
+      var c = nx !== null && ny !== null ? nx - ny : String(x).localeCompare(String(y));
+      return state.dir === 'asc' ? c : -c;
+    });
+    var shown = rows.slice(0, state.limit);
+    var head = d.columns.map(function (c, i) { return '<th><button type="button" data-col="' + i + '"' + (state.col === i ? ' data-dir="' + state.dir + '"' : '') + '>' + esc(c) + '</button></th>'; }).join('');
+    var body = shown.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + esc(c) + '</td>'; }).join('') + '</tr>'; }).join('')
+      || '<tr><td colspan="' + d.columns.length + '" class="muted">None</td></tr>';
+    box.querySelector('.dl-count').textContent = (q ? rows.length.toLocaleString() + ' of ' : '') + d.rows.length.toLocaleString() + ' rows';
+    box.querySelector('.dl-table').innerHTML = '<table><thead><tr>' + head + '</tr></thead><tbody>' + body + '</tbody></table>';
+    var more = box.querySelector('.dl-more');
+    more.hidden = rows.length <= state.limit;
+    more.textContent = 'Show all ' + rows.length.toLocaleString() + ' rows';
+  }
+  function load(det) {
+    var box = det.querySelector('.dl');
+    fetch(det.dataset.src, { credentials: 'same-origin' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (d) {
+      var state = { q: '', col: null, dir: 'asc', limit: PAGE };
+      box.innerHTML = '<div class="dl-head"><strong>' + esc(d.title) + '</strong> <span class="muted dl-count"></span>'
+        + '<span class="dl-tools"><input type="search" placeholder="Filter…" aria-label="Filter rows"><button type="button" class="btn ghost dl-csv">Download CSV</button></span></div>'
+        + (d.note ? '<p class="muted dl-note">' + esc(d.note) + '</p>' : '')
+        + '<div class="dt-wrap dl-table"></div><button type="button" class="btn ghost dl-more" hidden></button>';
+      box.querySelector('input').addEventListener('input', function (e) { state.q = e.target.value; state.limit = PAGE; render(box, d, state); });
+      box.querySelector('.dl-more').addEventListener('click', function () { state.limit = Infinity; render(box, d, state); });
+      box.querySelector('.dl-table').addEventListener('click', function (e) {
+        var b = e.target.closest('th button'); if (!b) return;
+        var col = +b.dataset.col; state.dir = state.col === col && state.dir === 'asc' ? 'desc' : 'asc'; state.col = col; render(box, d, state);
+      });
+      box.querySelector('.dl-csv').addEventListener('click', function () {
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([csv(d)], { type: 'text/csv' }));
+        a.download = det.dataset.src.split('/').pop().replace('.json', '.csv');
+        a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+      });
+      render(box, d, state);
+    }).catch(function () { box.innerHTML = '<p class="muted">Couldn’t load this list.</p>'; det.dataset.loaded = ''; });
+  }
+  document.querySelectorAll('details.check[data-src]').forEach(function (det) {
+    det.addEventListener('toggle', function () { if (det.open && !det.dataset.loaded) { det.dataset.loaded = '1'; load(det); } });
+  });
+})();
+</script>`;
+
+// Ranked "what to do next" list: analysis.plan → [{ title, why, steps:[], impact, effort, priority, check }]
+function growthPlan(p) {
+  const plan = p.analysis.plan || [];
+  if (!plan.length) return '';
+  const items = plan.map((s, i) => `<li class="plan-item">
+  <div class="plan-head"><span class="rank">${i + 1}</span><div class="plan-title"><strong>${escapeHtml(s.title)}</strong>
+  <div class="plan-tags">${s.impact ? `<span class="tag impact">${escapeHtml(s.impact)}</span>` : ''}${s.effort ? `<span class="tag">Effort: ${escapeHtml(s.effort)}</span>` : ''}${s.deadline ? `<span class="tag due">Due ${escapeHtml(s.deadline)}</span>` : ''}</div></div></div>
+  ${s.why ? `<p class="muted">${escapeHtml(s.why)}</p>` : ''}
+  ${s.steps?.length ? `<ol>${s.steps.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ol>` : ''}
+  <div class="cactions">${s.check ? `<a class="btn ghost" href="#${escapeHtml(s.check.split('.')[0])}">See the data</a>` : ''}${safeUrl(s.link) ? `<a class="btn" href="${escapeHtml(s.link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(s.linkLabel || 'Open in portal')} ↗</a>` : ''}</div>
+</li>`).join('');
+  return `<section class="plan"><h2>Best next steps to grow sales</h2>
+<p class="muted">Ranked by expected revenue impact. Estimates are based on this portal's own numbers (see each step).</p>
+<ol class="plan-list">${items}</ol></section>`;
 }
 
 function portalCard(p) {
@@ -339,7 +440,7 @@ function portalPage(p) {
     const b = band(r?.score);
     return `<section class="analyzer ${b.cls}" id="${a.key}">
   <div class="an-head">${icon(a.icon)}<div class="an-title"><h2>${escapeHtml(a.name)}</h2><div class="muted">${escapeHtml(r?.headline || a.desc)}</div></div>${ring(r?.score)}</div>
-  ${checksTable(a, r)}
+  ${checksTable(a, r, p)}
   <a class="more" href="/${encodeURIComponent(p.slug)}/${a.key}">${r ? `Findings, actions & metrics${r.tables?.length ? ` · ${r.tables.map(t => `${t.rows.length} ${t.title.toLowerCase()}`).join(' · ')}` : ''} →` : 'Details →'}</a>
 </section>`;
   }).join('');
@@ -350,16 +451,18 @@ function portalPage(p) {
   return `${hero(p, escapeHtml(p.channel))}
 <div class="summary">${ring(score, true)}<div><strong>Overall portal score</strong><div class="muted">${score !== null ? `${band(score).label} · average of ${Object.keys(analysis.analyzers).length} analyzers` : p.started ? 'Analysis in progress' : 'Analysis not started yet'}${meta ? `<br>${meta}` : ''}</div></div>
 <div class="counts"><span class="good">${counts.pass} OK</span><span class="warn">${counts.warn} attention</span><span class="bad">${counts.fail} problems</span><span class="none">${counts.total - counts.pass - counts.warn - counts.fail} not checked</span></div></div>
+${growthPlan(p)}
 <nav class="jump">${jump}</nav>
 ${sections}
-${reports ? `<h2>Reports</h2>${reports}` : ''}`;
+${reports ? `<h2>Reports</h2>${reports}` : ''}
+${CHECK_SCRIPT}`;
 }
 
 function analyzerPage(p, a) {
   const r = p.analysis.analyzers?.[a.key];
   const back = `<p><a href="/${encodeURIComponent(p.slug)}/">← All ${escapeHtml(p.name)} analyzers</a></p>`;
   const head = `${hero(p, `${escapeHtml(a.name)} · ${escapeHtml(a.desc)}`)}${back}`;
-  if (!r) return `${head}<p class="muted">This analyzer hasn't been run for ${escapeHtml(p.name)} yet. It will check:</p>${checksTable(a, null)}`;
+  if (!r) return `${head}<p class="muted">This analyzer hasn't been run for ${escapeHtml(p.name)} yet. It will check:</p>${checksTable(a, null, p)}`;
   const b = band(r.score);
   const list = (title, items) => items?.length ? `<h2>${title}</h2><ul>${items.map(i => `<li>${escapeHtml(i)}</li>`).join('')}</ul>` : '';
   const metrics = (r.metrics || []).map(m => {
@@ -371,7 +474,8 @@ function analyzerPage(p, a) {
 <div class="summary">${ring(r.score, true)}<div><strong>${escapeHtml(r.headline || a.name)}</strong><div class="muted"><span class="pill ${b.cls}">${b.label}</span>${p.analysis.period ? ` · ${escapeHtml(p.analysis.period)}` : ''}</div></div></div>
 ${metrics ? `<div class="metrics">${metrics}</div>` : ''}
 <h2>Checks</h2>
-${checksTable(a, r)}
+${checksTable(a, r, p)}
+${CHECK_SCRIPT}
 ${list('Findings', r.findings)}
 ${list('Recommended actions', r.actions)}
 ${(r.tables || []).map(dataTable).join('')}
@@ -451,11 +555,50 @@ main:has(.grid){max-width:1180px}
 .an-head{display:flex;gap:12px;align-items:center}
 .an-title{flex:1;min-width:0}.an-title h2{margin:0;font-size:18px}.an-title .muted{font-size:14px}
 .ico{width:24px;height:24px;flex:none;fill:none;stroke:var(--accent);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-table.checks{display:table;margin:12px 0 6px;font-size:14px}
-table.checks td{border:0;border-top:1px solid var(--line);padding:7px 8px}
-table.checks td:first-child{width:32px;padding-left:0}
+.checks{margin:12px 0 6px;font-size:14px}
+.check{border-top:1px solid var(--line)}
+div.check,.check>summary{display:grid;grid-template-columns:22px 1fr auto;gap:4px 12px;align-items:start;padding:8px 0}
+.check>summary{grid-template-columns:22px 1fr auto auto;cursor:pointer;list-style:none;border-radius:6px}
+.check>summary::-webkit-details-marker{display:none}
+.check>summary:hover .cmain{color:var(--accent)}
+.check>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cmain{min-width:0}
 .cval{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:600}
-.cnote{color:var(--muted);font-size:13px}
+.cnote{display:block;color:var(--muted);font-size:13px}
+.chips{display:flex;gap:6px;align-items:center;white-space:nowrap}
+.chip{font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.fixchip{border-color:var(--accent);color:var(--accent)}
+.caret{color:var(--muted);transition:transform .15s}
+.check[open] .caret{transform:rotate(90deg)}
+.cbody{padding:4px 0 14px 34px}
+.fix{background:var(--bg);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:10px 14px;margin-bottom:10px}
+.fix ol{margin:6px 0 0;padding-left:20px}
+.fix li{margin:3px 0}
+.impact{margin:8px 0 0;font-size:13px;font-weight:600;color:var(--good)}
+.cactions{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.btn{display:inline-block;padding:6px 12px;border-radius:8px;background:var(--accent);color:var(--accent-fg);font:inherit;font-size:13px;font-weight:600;text-decoration:none;border:1px solid var(--accent);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:hover{filter:brightness(1.08)}
+.dl-head{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:6px}
+.dl-tools{display:flex;gap:8px;margin-left:auto}
+.dl-tools input{padding:5px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg);font:inherit;font-size:13px;min-width:180px}
+.dl-note{margin:6px 0 0;font-size:13px}
+.dl .dt-wrap{max-height:60vh}
+.dl-more{margin-top:8px}
+@media (max-width:640px){.check>summary{grid-template-columns:22px 1fr auto}.chips{grid-column:2/-1}.cbody{padding-left:0}.dl-tools{margin-left:0;width:100%}.dl-tools input{flex:1;min-width:0}}
+.plan{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:0 0 16px}
+.plan h2{margin:0 0 2px}
+.plan-list{list-style:none;padding:0;margin:12px 0 0;counter-reset:none}
+.plan-item{border-top:1px solid var(--line);padding:12px 0}
+.plan-item ol{margin:6px 0;padding-left:20px;font-size:14px}
+.plan-item p{margin:6px 0;font-size:14px}
+.plan-head{display:flex;gap:12px;align-items:flex-start}
+.rank{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-fg);font-weight:700;font-size:14px}
+.plan-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.tag{font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.tag.impact{border-color:var(--good);color:var(--good)}
+.tag.due{border-color:var(--bad);color:var(--bad)}
+.plan-item .cactions{margin-left:40px}
 .cmark{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;font-size:12px;font-weight:700;color:var(--card);background:var(--line)}
 .cmark.good{background:var(--good)}.cmark.warn{background:var(--warn)}.cmark.bad{background:var(--bad)}.cmark.none{color:var(--muted)}
 .more{font-size:14px;text-decoration:none}
@@ -547,6 +690,16 @@ const server = http.createServer(async (req, res) => {
   if (!portal) return send(res, 404, page('Not found', '<h1>Not found</h1>'));
 
   if (parts.length === 1) return send(res, 200, page(portal.name, portalPage(portal)));
+
+  // Click-through lists: /<portal>/details/<analyzer>.<check>.json (only keys listed in the portal's index)
+  if (parts.length === 3 && parts[1] === 'details') {
+    const key = parts[2].replace(/\.json$/, '');
+    if (!portal.details[key]) return send(res, 404, page('Not found', '<h1>Not found</h1>'));
+    const raw = fs.readFileSync(path.join(ROOT, portal.slug, 'details', `${key}.json`));
+    const gzip = /\bgzip\b/.test(req.headers['accept-encoding'] || '');
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'private, no-cache', ...(gzip && { 'Content-Encoding': 'gzip' }) });
+    return res.end(gzip ? zlib.gzipSync(raw) : raw);
+  }
 
   const analyzer = ANALYZERS.find(a => a.key === parts[1]);
   if (parts.length === 2 && analyzer) return send(res, 200, page(`${analyzer.name} · ${portal.name}`, analyzerPage(portal, analyzer)));
