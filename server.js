@@ -6,6 +6,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const { marked } = require('marked');
 const PORTALS = require('./portals');
+const ANALYZERS = require('./analyzers');
 
 const PORT = process.env.PORT || 3000;
 const USER = process.env.APP_USER;
@@ -130,7 +131,7 @@ function listPortals() {
     .map(d => ({ slug: d.name, name: titleCase(d.name), channel: '', from: '#57534E', to: '#A8A29E', ink: '#fff' }));
   return [...PORTALS, ...extra].map(p => {
     const started = fs.existsSync(path.join(ROOT, p.slug, 'reports'));
-    return { ...p, started, reports: started ? listReports(p.slug) : [] };
+    return { ...p, started, reports: started ? listReports(p.slug) : [], analysis: loadAnalysis(p.slug) };
   });
 }
 
@@ -140,42 +141,201 @@ function listReports(portal) {
     .sort();
 }
 
+function loadAnalysis(slug) {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(ROOT, slug, 'analyzers.json'), 'utf8'));
+  } catch {
+    return { analyzers: {} };
+  }
+}
+
 function initials(name) {
   return name.replace(/'/g, '').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
 }
 
+// Score bands from templates/analyzer-rubric.md
+function band(score) {
+  if (typeof score !== 'number') return { cls: 'none', label: 'Not analysed' };
+  if (score >= 80) return { cls: 'good', label: 'Healthy' };
+  if (score >= 50) return { cls: 'warn', label: 'Needs attention' };
+  return { cls: 'bad', label: 'Critical' };
+}
+
+function overallScore(analysis) {
+  const scores = Object.values(analysis.analyzers || {}).map(a => a.score).filter(s => typeof s === 'number');
+  return scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : null;
+}
+
+const ICONS = {
+  shield: 'M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z',
+  list: 'M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01',
+  tag: 'M3 12V4h8l10 10-8 8zM7.5 7.5h.01',
+  box: 'M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10',
+  truck: 'M2 6h12v10H2zM14 10h4l4 3v3h-8M6 19.5a1.5 1.5 0 1 0 0-.01M18 19.5a1.5 1.5 0 1 0 0-.01',
+  undo: 'M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3',
+  chart: 'M3 20h18M6 16v-5M11 16V6M16 16v-8M21 16v-3',
+  mega: 'M3 10v4l12 5V5zM15 9a3 3 0 0 1 0 6M6 15l1.5 5h3L9 16',
+  star: 'M12 3l2.8 5.8 6.2.9-4.5 4.4 1 6.3L12 17.5l-5.5 2.9 1-6.3L3 9.7l6.2-.9z',
+  gift: 'M3 9h18v4H3zM5 13h14v8H5zM12 9v12M12 9C10 5 6.5 5 6.5 7S9 9 12 9zM12 9c2-4 5.5-4 5.5-2S15 9 12 9z',
+};
+
+// Full detail tables (every promotion, campaign, SKU…) with a filter box and click-to-sort headers.
+function dataTable(t, i) {
+  const head = t.columns.map((c, j) => `<th><button type="button" data-col="${j}">${escapeHtml(c)}</button></th>`).join('');
+  const body = t.rows.map(r => `<tr>${r.map(c => `<td>${escapeHtml(c == null ? '' : String(c))}</td>`).join('')}</tr>`).join('');
+  return `<section class="dtable">
+  <div class="dt-head"><h2>${escapeHtml(t.title)} <span class="muted">(${t.rows.length})</span></h2>
+  <input type="search" placeholder="Filter…" aria-label="Filter ${escapeHtml(t.title)}" data-filter="dt${i}"></div>
+  ${t.note ? `<p class="muted">${escapeHtml(t.note)}</p>` : ''}
+  <div class="dt-wrap"><table id="dt${i}"><thead><tr>${head}</tr></thead><tbody>${body || `<tr><td colspan="${t.columns.length}" class="muted">None</td></tr>`}</tbody></table></div>
+</section>`;
+}
+
+const TABLE_SCRIPT = `<script>
+document.querySelectorAll('[data-filter]').forEach(inp => inp.addEventListener('input', () => {
+  const q = inp.value.toLowerCase();
+  document.querySelectorAll('#' + inp.dataset.filter + ' tbody tr').forEach(tr => { tr.hidden = q && !tr.textContent.toLowerCase().includes(q); });
+}));
+document.querySelectorAll('.dtable th button').forEach(btn => btn.addEventListener('click', () => {
+  const table = btn.closest('table'), col = +btn.dataset.col, tbody = table.tBodies[0];
+  const dir = btn.dataset.dir === 'asc' ? 'desc' : 'asc';
+  table.querySelectorAll('th button').forEach(b => delete b.dataset.dir);
+  btn.dataset.dir = dir;
+  const num = s => { const n = parseFloat(s.replace(/[$,%x★]/g, '')); return isNaN(n) ? null : n; };
+  [...tbody.rows].sort((a, b) => {
+    const x = a.cells[col]?.textContent || '', y = b.cells[col]?.textContent || '';
+    const nx = num(x), ny = num(y);
+    const r = nx !== null && ny !== null ? nx - ny : x.localeCompare(y);
+    return dir === 'asc' ? r : -r;
+  }).forEach(tr => tbody.appendChild(tr));
+}));
+</script>`;
+const icon = name => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="${ICONS[name] || ''}"/></svg>`;
+
+function ring(score, big) {
+  const b = band(score);
+  const p = typeof score === 'number' ? score : 0;
+  return `<span class="ring ${b.cls}${big ? ' big' : ''}" style="--p:${p}" role="img" aria-label="${typeof score === 'number' ? `Score ${score} of 100, ${b.label}` : b.label}"><b>${typeof score === 'number' ? score : '–'}</b></span>`;
+}
+
 function statusLabel(p) {
+  const done = Object.keys(p.analysis.analyzers || {}).length;
+  if (done) return `${done}/${ANALYZERS.length} analyzers`;
   if (p.reports.length) return `${p.reports.length} report${p.reports.length === 1 ? '' : 's'}`;
   return p.started ? 'In progress' : 'Not started';
 }
 
+const CHECK = {
+  pass: { cls: 'good', mark: '✓', label: 'OK' },
+  warn: { cls: 'warn', mark: '!', label: 'Needs attention' },
+  fail: { cls: 'bad', mark: '✕', label: 'Problem' },
+  na: { cls: 'none', mark: '–', label: 'Not applicable' },
+};
+const checkState = s => CHECK[s] || { cls: 'none', mark: '–', label: 'Not checked' };
+
+function checkCounts(analysis) {
+  const counts = { pass: 0, warn: 0, fail: 0, total: 0 };
+  for (const a of ANALYZERS) {
+    for (const c of a.checks) {
+      counts.total++;
+      const s = analysis.analyzers?.[a.key]?.checks?.[c.id]?.status;
+      if (s in counts) counts[s]++;
+    }
+  }
+  return counts;
+}
+
+function checksTable(a, r) {
+  const rows = a.checks.map(c => {
+    const res = r?.checks?.[c.id] || {};
+    const st = checkState(res.status);
+    return `<tr><td><span class="cmark ${st.cls}" title="${st.label}">${st.mark}</span></td><td>${escapeHtml(c.name)}${res.note ? `<div class="cnote">${escapeHtml(res.note)}</div>` : ''}</td><td class="cval">${res.value != null ? escapeHtml(String(res.value)) : '<span class="muted">—</span>'}</td></tr>`;
+  }).join('');
+  return `<table class="checks"><tbody>${rows}</tbody></table>`;
+}
+
 function portalCard(p) {
+  const score = overallScore(p.analysis);
+  const counts = checkCounts(p.analysis);
+  const rows = ANALYZERS.map(a => {
+    const s = p.analysis.analyzers?.[a.key]?.score;
+    return `<span class="arow"><i class="dot ${band(s).cls}"></i><span>${escapeHtml(a.name)}</span><b>${typeof s === 'number' ? s : '–'}</b></span>`;
+  }).join('');
+  const flagged = counts.warn + counts.fail;
   return `<a class="portal" href="/${encodeURIComponent(p.slug)}/" style="--from:${p.from};--to:${p.to};--ink:${p.ink}">
-  <span class="mono" aria-hidden="true">${escapeHtml(initials(p.name))}</span>
+  <span class="top"><span class="mono" aria-hidden="true">${escapeHtml(initials(p.name))}</span>${score !== null ? `<span class="overall"><b>${score}</b><small>/100</small></span>` : ''}</span>
   <span class="pname">${escapeHtml(p.name)}</span>
   <span class="channel">${escapeHtml(p.channel)}</span>
-  <span class="status${p.started ? '' : ' idle'}">${statusLabel(p)}</span>
+  <span class="arows">${rows}</span>
+  <span class="status${p.started ? '' : ' idle'}">${counts.pass + flagged ? `${flagged} of ${counts.total} checks flagged` : statusLabel(p)}</span>
 </a>`;
 }
 
 function homePage(portals) {
   const started = portals.filter(p => p.started).length;
-  const reports = portals.reduce((n, p) => n + p.reports.length, 0);
+  const legend = ['good', 'warn', 'bad', 'none'].map(c => `<span><i class="dot ${c}"></i>${band({ good: 90, warn: 60, bad: 10 }[c]).label}</span>`).join('');
   return `<h1>HomeWeavers portal analysis</h1>
-<p class="muted">${portals.length} portals · ${started} in progress · ${reports} report${reports === 1 ? '' : 's'}</p>
+<p class="muted">${portals.length} portals · ${started} in progress · ${ANALYZERS.length} analyzers per portal</p>
+<div class="legend">${legend}</div>
 <div class="grid">${portals.map(portalCard).join('')}</div>`;
 }
 
-function portalPage(p) {
-  const items = p.reports.map(f =>
-    `<a class="card" href="/${encodeURIComponent(p.slug)}/${encodeURIComponent(f)}">${escapeHtml(titleCase(f.replace(/\.(md|html)$/i, '')))}</a>`
-  ).join('');
-  const empty = p.started ? 'Analysis in progress — reports will appear here.' : 'Analysis not started yet.';
+function hero(p, sub) {
   return `<div class="hero" style="--from:${p.from};--to:${p.to};--ink:${p.ink}">
   <span class="mono" aria-hidden="true">${escapeHtml(initials(p.name))}</span>
-  <div><h1>${escapeHtml(p.name)}</h1><div class="channel">${escapeHtml(p.channel)}</div></div>
-</div>
-${items || `<p class="muted">${empty}</p>`}`;
+  <div><h1>${escapeHtml(p.name)}</h1><div class="channel">${sub}</div></div>
+</div>`;
+}
+
+function portalPage(p) {
+  const { analysis } = p;
+  const score = overallScore(analysis);
+  const meta = [analysis.period && `Period: ${escapeHtml(analysis.period)}`, analysis.updated && `Updated ${escapeHtml(analysis.updated)}`].filter(Boolean).join(' · ');
+  const counts = checkCounts(analysis);
+  const sections = ANALYZERS.map(a => {
+    const r = analysis.analyzers?.[a.key];
+    const b = band(r?.score);
+    return `<section class="analyzer ${b.cls}" id="${a.key}">
+  <div class="an-head">${icon(a.icon)}<div class="an-title"><h2>${escapeHtml(a.name)}</h2><div class="muted">${escapeHtml(r?.headline || a.desc)}</div></div>${ring(r?.score)}</div>
+  ${checksTable(a, r)}
+  <a class="more" href="/${encodeURIComponent(p.slug)}/${a.key}">${r ? `Findings, actions & metrics${r.tables?.length ? ` · ${r.tables.map(t => `${t.rows.length} ${t.title.toLowerCase()}`).join(' · ')}` : ''} →` : 'Details →'}</a>
+</section>`;
+  }).join('');
+  const jump = ANALYZERS.map(a => `<a href="#${a.key}"><i class="dot ${band(analysis.analyzers?.[a.key]?.score).cls}"></i>${escapeHtml(a.name)}</a>`).join('');
+  const reports = p.reports.map(f =>
+    `<a class="card" href="/${encodeURIComponent(p.slug)}/${encodeURIComponent(f)}">${escapeHtml(titleCase(f.replace(/\.(md|html)$/i, '')))}</a>`
+  ).join('');
+  return `${hero(p, escapeHtml(p.channel))}
+<div class="summary">${ring(score, true)}<div><strong>Overall portal score</strong><div class="muted">${score !== null ? `${band(score).label} · average of ${Object.keys(analysis.analyzers).length} analyzers` : p.started ? 'Analysis in progress' : 'Analysis not started yet'}${meta ? `<br>${meta}` : ''}</div></div>
+<div class="counts"><span class="good">${counts.pass} OK</span><span class="warn">${counts.warn} attention</span><span class="bad">${counts.fail} problems</span><span class="none">${counts.total - counts.pass - counts.warn - counts.fail} not checked</span></div></div>
+<nav class="jump">${jump}</nav>
+${sections}
+${reports ? `<h2>Reports</h2>${reports}` : ''}`;
+}
+
+function analyzerPage(p, a) {
+  const r = p.analysis.analyzers?.[a.key];
+  const back = `<p><a href="/${encodeURIComponent(p.slug)}/">← All ${escapeHtml(p.name)} analyzers</a></p>`;
+  const head = `${hero(p, `${escapeHtml(a.name)} · ${escapeHtml(a.desc)}`)}${back}`;
+  if (!r) return `${head}<p class="muted">This analyzer hasn't been run for ${escapeHtml(p.name)} yet. It will check:</p>${checksTable(a, null)}`;
+  const b = band(r.score);
+  const list = (title, items) => items?.length ? `<h2>${title}</h2><ul>${items.map(i => `<li>${escapeHtml(i)}</li>`).join('')}</ul>` : '';
+  const metrics = (r.metrics || []).map(m => {
+    const tone = m.good === true ? 'pos' : m.good === false ? 'neg' : '';
+    const arrow = { up: '▲', down: '▼', flat: '■' }[m.dir] || '';
+    return `<div class="metric"><div class="mlabel">${escapeHtml(m.label)}</div><div class="mvalue">${escapeHtml(String(m.value))}</div>${m.change ? `<div class="mchange ${tone}">${arrow} ${escapeHtml(m.change)}</div>` : ''}</div>`;
+  }).join('');
+  return `${head}
+<div class="summary">${ring(r.score, true)}<div><strong>${escapeHtml(r.headline || a.name)}</strong><div class="muted"><span class="pill ${b.cls}">${b.label}</span>${p.analysis.period ? ` · ${escapeHtml(p.analysis.period)}` : ''}</div></div></div>
+${metrics ? `<div class="metrics">${metrics}</div>` : ''}
+<h2>Checks</h2>
+${checksTable(a, r)}
+${list('Findings', r.findings)}
+${list('Recommended actions', r.actions)}
+${(r.tables || []).map(dataTable).join('')}
+${r.tables?.length ? TABLE_SCRIPT : ''}
+${r.scoreNote ? `<h2>How this was scored</h2><p class="muted">${escapeHtml(r.scoreNote)}</p>` : ''}
+${r.source ? `<p class="muted">Source: ${escapeHtml(r.source)}</p>` : ''}`;
 }
 
 function page(title, body) {
@@ -184,8 +344,8 @@ function page(title, body) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(title)}</title>
 <style>
-:root{--bg:#fafaf9;--fg:#1c1917;--muted:#78716c;--line:#e7e5e4;--accent:#7b189f;--card:#fff}
-@media (prefers-color-scheme:dark){:root{--bg:#1c1917;--fg:#f5f5f4;--muted:#a8a29e;--line:#44403c;--accent:#d8a4ef;--card:#292524}}
+:root{--bg:#fafaf9;--fg:#1c1917;--muted:#78716c;--line:#e7e5e4;--accent:#7b189f;--card:#fff;--good:#15803d;--warn:#b45309;--bad:#b91c1c}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1917;--fg:#f5f5f4;--muted:#a8a29e;--line:#44403c;--accent:#d8a4ef;--card:#292524;--good:#4ade80;--warn:#fbbf24;--bad:#f87171}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,Segoe UI,sans-serif}
 header{border-bottom:1px solid var(--line);padding:10px 16px;display:flex;justify-content:space-between;align-items:center}
@@ -217,7 +377,63 @@ main:has(.grid){max-width:1180px}
 .channel{font-size:13px;opacity:.85;margin-top:2px}
 .status{margin-top:auto;align-self:flex-start;position:relative;z-index:1;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;background:rgb(255 255 255/.22)}
 .status.idle{background:rgb(0 0 0/.18)}
-.portal .status{margin-top:18px}
+.portal .status{margin-top:14px}
+.top{display:flex;justify-content:space-between;align-items:flex-start}
+.overall{background:rgb(255 255 255/.22);border-radius:10px;padding:2px 10px;font-size:13px}
+.overall b{font-size:20px}
+.arows{position:relative;z-index:1;display:grid;gap:3px;margin-top:14px;padding:10px 12px;border-radius:10px;background:rgb(0 0 0/.16);font-size:12.5px}
+.arow{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px}
+.arow b{font-variant-numeric:tabular-nums;opacity:.9}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;flex:none;box-shadow:0 0 0 1.5px rgb(255 255 255/.7)}
+.dot.good{background:var(--good)}.dot.warn{background:var(--warn)}.dot.bad{background:var(--bad)}.dot.none{background:rgb(255 255 255/.25)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend .dot{box-shadow:none}.legend .dot.none,.jump .dot.none{background:var(--line)}
+.summary{display:flex;flex-wrap:wrap;gap:16px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+.summary>div:nth-child(2){flex:1;min-width:200px}
+.counts{display:flex;flex-wrap:wrap;gap:8px;font-size:13px;font-weight:600}
+.counts span{padding:3px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+.counts .good{color:var(--good)}.counts .warn{color:var(--warn)}.counts .bad{color:var(--bad)}.counts .none{color:var(--muted)}
+.ring{--c:var(--line);position:relative;display:inline-grid;place-items:center;flex:none;width:46px;height:46px;border-radius:50%;
+  background:conic-gradient(var(--c) calc(var(--p)*1%),var(--line) 0)}
+.ring::before{content:"";position:absolute;inset:5px;border-radius:50%;background:var(--card)}
+.ring b{position:relative;font-size:15px;font-variant-numeric:tabular-nums}
+.ring.big{width:72px;height:72px}.ring.big::before{inset:7px}.ring.big b{font-size:24px}
+.ring.good{--c:var(--good)}.ring.warn{--c:var(--warn)}.ring.bad{--c:var(--bad)}
+.jump{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.jump a{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;color:var(--fg);text-decoration:none;background:var(--card)}
+.jump a:hover{border-color:var(--accent)}
+.jump .dot{box-shadow:none}
+.analyzer{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:12px;padding:16px;margin:0 0 14px;scroll-margin-top:12px}
+.analyzer.good{border-left-color:var(--good)}.analyzer.warn{border-left-color:var(--warn)}.analyzer.bad{border-left-color:var(--bad)}
+.an-head{display:flex;gap:12px;align-items:center}
+.an-title{flex:1;min-width:0}.an-title h2{margin:0;font-size:18px}.an-title .muted{font-size:14px}
+.ico{width:24px;height:24px;flex:none;fill:none;stroke:var(--accent);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+table.checks{display:table;margin:12px 0 6px;font-size:14px}
+table.checks td{border:0;border-top:1px solid var(--line);padding:7px 8px}
+table.checks td:first-child{width:32px;padding-left:0}
+.cval{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:600}
+.cnote{color:var(--muted);font-size:13px}
+.cmark{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;font-size:12px;font-weight:700;color:var(--card);background:var(--line)}
+.cmark.good{background:var(--good)}.cmark.warn{background:var(--warn)}.cmark.bad{background:var(--bad)}.cmark.none{color:var(--muted)}
+.more{font-size:14px;text-decoration:none}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;border:1px solid currentColor}
+.pill.good{color:var(--good)}.pill.warn{color:var(--warn)}.pill.bad{color:var(--bad)}.pill.none{color:var(--muted)}
+.metrics{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin:0 0 8px}
+.metric{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px}
+.mlabel{font-size:13px;color:var(--muted)}.mvalue{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.mchange{font-size:13px}.mchange.pos{color:var(--good)}.mchange.neg{color:var(--bad)}
+.dtable{margin-top:24px}
+.dt-head{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+.dt-head h2{margin:0}
+.dt-head input{padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg);font:inherit;font-size:14px;min-width:200px}
+.dt-wrap{overflow:auto;max-height:70vh;border:1px solid var(--line);border-radius:10px;margin-top:10px}
+.dt-wrap table{display:table;margin:0;font-size:14px}
+.dt-wrap th{position:sticky;top:0;z-index:1;padding:0;border-top:0}
+.dt-wrap th button{all:unset;display:block;padding:8px 10px;cursor:pointer;font-weight:600;white-space:nowrap}
+.dt-wrap th button[data-dir=asc]::after{content:" ▲"}.dt-wrap th button[data-dir=desc]::after{content:" ▼"}
+.dt-wrap td{white-space:nowrap}
+.dt-wrap td,.dt-wrap th{border-left:0;border-right:0}
 .hero{display:flex;gap:16px;align-items:center;padding:22px;border-radius:14px;margin-bottom:20px;color:var(--ink);background:linear-gradient(135deg,var(--from),var(--to))}
 .hero h1{margin:0;font-size:26px}
 .hero .mono{width:52px;height:52px;font-size:18px}
@@ -287,6 +503,9 @@ const server = http.createServer(async (req, res) => {
   if (!portal) return send(res, 404, page('Not found', '<h1>Not found</h1>'));
 
   if (parts.length === 1) return send(res, 200, page(portal.name, portalPage(portal)));
+
+  const analyzer = ANALYZERS.find(a => a.key === parts[1]);
+  if (parts.length === 2 && analyzer) return send(res, 200, page(`${analyzer.name} · ${portal.name}`, analyzerPage(portal, analyzer)));
 
   const file = parts[1];
   if (parts.length !== 2 || !portal.reports.includes(file)) return send(res, 404, page('Not found', '<h1>Not found</h1>'));

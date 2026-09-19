@@ -1,0 +1,3937 @@
+{
+  "updated": "2026-09-19",
+  "period": "Aug 2026 vs Aug 2025 · SKU data last 90 days · fulfillment last 4 weeks",
+  "analyzers": {
+    "portal-health": {
+      "score": 70,
+      "headline": "Account in good standing, but a fill-rate alert and two 6-month-old tickets are open",
+      "checks": {
+        "account-status": {
+          "status": "pass",
+          "value": "Active",
+          "note": "Supplier ID 19440 · HomeWeaversInc · no suspensions"
+        },
+        "scorecard": {
+          "status": "warn",
+          "value": "87.2% fill",
+          "note": "Fulfillment dashboard alert: Low Induction Fill Rate"
+        },
+        "compliance-flags": {
+          "status": "pass",
+          "value": "0",
+          "note": "PBSI requiring urgent action: 0 · pricing & review violations: 0"
+        },
+        "open-tickets": {
+          "status": "warn",
+          "value": "3 open",
+          "note": "2 “Supplier Outreach Request” (Products) tickets in progress since 13 Mar 2026"
+        },
+        "alerts": {
+          "status": "warn",
+          "value": "2",
+          "note": "1 overdue order · 1 low induction fill rate alert"
+        },
+        "documents": {
+          "status": "na",
+          "note": "Not visible in Partner Home — check separately"
+        }
+      },
+      "metrics": [
+        {
+          "label": "Open tickets",
+          "value": 3
+        },
+        {
+          "label": "Oldest open ticket",
+          "value": "190 days",
+          "good": false
+        },
+        {
+          "label": "PBSI urgent actions",
+          "value": 0,
+          "good": true
+        },
+        {
+          "label": "Active orders",
+          "value": 23
+        }
+      ],
+      "findings": [
+        "No compliance, pricing or review violations — the account is in good standing.",
+        "Two product “Supplier Outreach Request” tickets (QAPH-3340280, QAPH-3331799) have been “In Progress” since 13 Mar 2026.",
+        "Finance ticket DESK-673236 (WayUp inquiry) was updated 18 Sep 2026."
+      ],
+      "actions": [
+        "Chase or close the two March outreach tickets — stale tickets hide real issues.",
+        "Fix the induction fill-rate alert (see Order & Fulfillment)."
+      ],
+      "tables": [
+        {
+          "title": "Open tickets",
+          "columns": [
+            "Ticket",
+            "Title",
+            "Category",
+            "Last updated",
+            "Status"
+          ],
+          "rows": [
+            [
+              "DESK-673236",
+              "US - WayUp Inquiry - HomeWeaversInc (19440)",
+              "Finance & Accounting",
+              "2026-09-18",
+              "In Progress"
+            ],
+            [
+              "QAPH-3340280",
+              "Supplier Outreach Request",
+              "Products",
+              "2026-03-13",
+              "In Progress"
+            ],
+            [
+              "QAPH-3331799",
+              "Supplier Outreach Request",
+              "Products",
+              "2026-03-13",
+              "In Progress"
+            ]
+          ]
+        }
+      ],
+      "source": "Home dashboard · Supplier Inbox · Fulfillment Performance dashboard",
+      "scoreNote": "100 − 10 (2 tickets older than 7 days) − 20 (induction fill rate below Wayfair threshold, alert raised) = 70."
+    },
+    "listing-health": {
+      "score": 60,
+      "headline": "95% of active products are live, but listings are missing a median of 187 attributes and a selling family is offline",
+      "checks": {
+        "live-rate": {
+          "status": "pass",
+          "value": "95.1%",
+          "note": "4,452 live + 136 live in some stores of 4,825 active products (796 more are discontinued)"
+        },
+        "suppressed": {
+          "status": "fail",
+          "value": "237 SKUs",
+          "note": "33 product families Not Live — 3 of them sold $2,101 in the last 90 days"
+        },
+        "warnings": {
+          "status": "pass",
+          "value": "0",
+          "note": "No product warnings or problems flagged"
+        },
+        "images": {
+          "status": "na",
+          "note": "Image counts not returned by Partner Home for this account — check in Media Management"
+        },
+        "attributes": {
+          "status": "fail",
+          "value": "187 median missing",
+          "note": "4,261 SKUs (88%) miss > 50 attributes; top-50 sellers miss a median of 133"
+        },
+        "titles": {
+          "status": "na",
+          "note": "Not scored yet"
+        },
+        "duplicates": {
+          "status": "pass",
+          "value": "0",
+          "note": "No potential-duplicate warnings"
+        }
+      },
+      "metrics": [
+        {
+          "label": "Active products",
+          "value": "4,825"
+        },
+        {
+          "label": "Live",
+          "value": "4,452"
+        },
+        {
+          "label": "Not Live",
+          "value": 237,
+          "good": false
+        },
+        {
+          "label": "Median missing attributes",
+          "value": 187,
+          "good": false
+        },
+        {
+          "label": "Opportunities flagged",
+          "value": 32
+        }
+      ],
+      "findings": [
+        "Bruss Luxury family FBWX1917 (44 variants, e.g. BLUX2134TC) is Not Live yet sold $1,422 / 143 units in the last 90 days — the single biggest listing fix.",
+        "OPCO4702 (BDR…, 36 variants, $410 in 90 days) and FBWX1956 (BMO30R…, 26 variants, $268) are also Not Live with recent sales.",
+        "Missing attributes are near-universal: median 187 per SKU, only 205 SKUs have none missing. Attributes feed Wayfair filters and search.",
+        "No warnings or problems are flagged on any SKU — catalog hygiene is otherwise clean."
+      ],
+      "actions": [
+        "Get FBWX1917, OPCO4702 and FBWX1956 back to Live (check stock and listing status in Product Management).",
+        "Bulk-fill attributes starting with the top 100 sellers (Update from File → attribute template).",
+        "Review the 32 opportunities in Product Management."
+      ],
+      "tables": [
+        {
+          "title": "Not Live product families",
+          "note": "Grouped by Wayfair listing (colour/size variants share one listing). Revenue = last 90 days.",
+          "columns": [
+            "Listing",
+            "Example part #",
+            "Variants",
+            "Revenue (90d)",
+            "Units (90d)",
+            "Rating",
+            "Reviews"
+          ],
+          "rows": [
+            [
+              "FBWX1917",
+              "BLUX2134TC",
+              44,
+              "$1,422.33",
+              143,
+              3.88,
+              51
+            ],
+            [
+              "OPCO4702",
+              "BDR2440NA",
+              36,
+              "$409.90",
+              37,
+              4.38,
+              198
+            ],
+            [
+              "FBWX1956",
+              "BMO30RBLK",
+              26,
+              "$268.47",
+              18,
+              4.28,
+              18
+            ],
+            [
+              "FBWX1458",
+              "BBE1818BL1",
+              11,
+              "$0.00",
+              0,
+              4.67,
+              27
+            ],
+            [
+              "FBWX2052",
+              "BDR3212TBL",
+              21,
+              "$0.00",
+              0,
+              "—",
+              0
+            ],
+            [
+              "FBWX2037",
+              "BWA85P1T1H1WBL",
+              13,
+              "$0.00",
+              0,
+              "—",
+              0
+            ],
+            [
+              "FBWX2000",
+              "BDR82P2T2H2WBL",
+              7,
+              "$0.00",
+              0,
+              "—",
+              0
+            ],
+            [
+              "FBWX1978",
+              "BDR93P2T2H2WBL",
+              7,
+              "$0.00",
+              0,
+              "—",
+              0
+            ],
+            [
+              "FBWX1995",
+              "BLUX52P1T1H1WBL",
+              7,
+              "$0.00",
+              0,
+              "—",
+              0
+            ],
+            [
+              "FBWX1982",
+              "BLUX63P1T1H1WBL",
+              7,
+              "$0.00",
+              0,
+              "—",
+              0
+            ],
+            [
+              "FBWX1993",
+              "BLUX85P1T1H1WBL",
+              7,
+              "$0.00",
+              0,
+              "—",
+              0
+            ],
+            [
+              "WNPP2030",
+              "BWA3PCBL",
+              7,
+              "$0.00",
+              0,
+              3.87,
+              634
+            ],
+            [
+              "ESEE1022",
+              "LS26BR",
+              6,
+              "$0.00",
+              0,
+              4.2,
+              10
+            ],
+            [
+              "ESEE1018",
+              "LS3RDBR",
+              4,
+              "$0.00",
+              0,
+              4,
+              22
+            ],
+            [
+              "FBWX2031",
+              "BWA9172T2H4WCH",
+              4,
+              "$0.00",
+              0,
+              "—",
+              0
+            ],
+            [
+              "FBWX2016",
+              "BWA9212T2H4WCH",
+              4,
+              "$0.00",
+              0,
+              "—",
+              0
+            ],
+            [
+              "FBWX2012",
+              "BWA3172TCH",
+              3,
+              "$0.00",
+              0,
+              "—",
+              0
+            ],
+            [
+              "FBWX2009",
+              "BWA3212TCH",
+              3,
+              "$0.00",
+              0,
+              "—",
+              0
+            ],
+            [
+              "ESEE1055",
+              "BDE1724LA",
+              2,
+              "$0.00",
+              0,
+              4.17,
+              36
+            ],
+            [
+              "FBWX1157",
+              "BMI25RGY",
+              2,
+              "$0.00",
+              0,
+              4.44,
+              9
+            ],
+            [
+              "EBND3282",
+              "JS2436B",
+              2,
+              "$0.00",
+              0,
+              3.86,
+              7
+            ],
+            [
+              "EBND3266",
+              "JS2436LB",
+              2,
+              "$0.00",
+              0,
+              4.8,
+              5
+            ],
+            [
+              "ESEE1016",
+              "LS26BRTA",
+              2,
+              "$0.00",
+              0,
+              4,
+              28
+            ],
+            [
+              "HSHM1236",
+              "BBEHR2525MI",
+              1,
+              "$0.00",
+              0,
+              4.5,
+              144
+            ],
+            [
+              "FBWX1152",
+              "BHU2134YE",
+              1,
+              "$0.00",
+              0,
+              4.59,
+              17
+            ],
+            [
+              "EBND3294",
+              "JS2436R",
+              1,
+              "$0.00",
+              0,
+              3.6,
+              5
+            ],
+            [
+              "FBWX1058",
+              "LS2436MU",
+              1,
+              "$0.00",
+              0,
+              5,
+              2
+            ],
+            [
+              "ESEE1025",
+              "LS26TAM",
+              1,
+              "$0.00",
+              0,
+              4.06,
+              16
+            ],
+            [
+              "ESEE1027",
+              "LS49RBRM",
+              1,
+              "$0.00",
+              0,
+              4.45,
+              22
+            ],
+            [
+              "ESEE1023",
+              "LS49RRE",
+              1,
+              "$0.00",
+              0,
+              4.43,
+              14
+            ],
+            [
+              "ESEE1084",
+              "LS49RTA",
+              1,
+              "$0.00",
+              0,
+              "—",
+              0
+            ],
+            [
+              "FBWX1176",
+              "THRBLO5060GY",
+              1,
+              "$0.00",
+              0,
+              "—",
+              0
+            ],
+            [
+              "FBWX1180",
+              "THRTR5060IV",
+              1,
+              "$0.00",
+              0,
+              4.69,
+              13
+            ]
+          ]
+        }
+      ],
+      "source": "Product Management (all 4,825 active products, last 90 days)",
+      "scoreNote": "100 − 3.9 (7.7% not fully live × 0.5) − 0 (no warnings) − 26.5 (88% of SKUs miss > 50 attributes × 0.3) − 10 (top-50 sellers missing attributes) = 60."
+    },
+    "pricing-health": {
+      "score": 90,
+      "headline": "No price violations; Wayfair flags 11 cost-change and 99+ promo-price opportunities",
+      "checks": {
+        "violations": {
+          "status": "pass",
+          "value": "0",
+          "note": "No PBSI pricing violations on any product"
+        },
+        "competitiveness": {
+          "status": "warn",
+          "value": "11 + 99",
+          "note": "11 products with cost-change opportunities · 99+ with promotional-pricing recommendations"
+        },
+        "map": {
+          "status": "warn",
+          "value": "7%",
+          "note": "MAP set on 335 of 4,588 live SKUs; MSRP set on 1,454"
+        },
+        "pending-changes": {
+          "status": "na",
+          "note": "Not checked (Pricing Home → Cost Changes)"
+        }
+      },
+      "metrics": [
+        {
+          "label": "Median base cost (live)",
+          "value": "$36.61"
+        },
+        {
+          "label": "Base cost range (P10–P90)",
+          "value": "$11.99–$86.09"
+        },
+        {
+          "label": "Median MSRP ÷ cost",
+          "value": "1.63×"
+        },
+        {
+          "label": "Standing B2B discount",
+          "value": "12%"
+        },
+        {
+          "label": "B2B bulk tier (qty 3+)",
+          "value": "15%"
+        }
+      ],
+      "findings": [
+        "Base cost is clean — no pricing violations.",
+        "Average selling price fell ~20% year on year in August (revenue −24.7% vs units −5.4%) — see Promotions for the discount load behind it.",
+        "Every B2B order already carries a 12% standing discount plus a 15% bulk tier; event B2B discounts are layered on top."
+      ],
+      "actions": [
+        "Review the 11 cost-change recommendations in Pricing Home — they are Wayfair’s sort-rank levers.",
+        "Set MAP on the top sellers to protect price perception across channels."
+      ],
+      "source": "Pricing Home · catalog cost data (5,621 parts)",
+      "scoreNote": "100 − 0 (no violations) − 10 (competitiveness flags present) = 90."
+    },
+    "promotions": {
+      "score": 60,
+      "headline": "Every live SKU is discounted non-stop until 19 Nov; 4 new events (incl. Way Day) are open and not submitted",
+      "checks": {
+        "active": {
+          "status": "pass",
+          "value": "8 programs",
+          "note": "Fall Sale, Q3 Extended Discounts, B2B New Discounts, B2B Bulk Tier, Willow Towels 15%, Inventory Rotation, Closeout Overage, Migrated Closeout"
+        },
+        "upcoming": {
+          "status": "pass",
+          "value": "4 events",
+          "note": "Semi-Annual Members Sale (9/23), 72 Hour Clearout (9/26), Big Furniture Sale (9/29), Holiday Deal Week (10/12)"
+        },
+        "ending-soon": {
+          "status": "warn",
+          "value": "1",
+          "note": "NA Fall Sale ends 22 Sep"
+        },
+        "sku-coverage": {
+          "status": "warn",
+          "value": "100%",
+          "note": "All 4,588 live SKUs have a retail discount running today — no full-price window"
+        },
+        "top-seller-coverage": {
+          "status": "pass",
+          "value": "5 / 5",
+          "note": "Top sellers are in every current and upcoming event"
+        },
+        "discount-depth": {
+          "status": "warn",
+          "value": "10–23% retail",
+          "note": "B2B 12–25%; closeout 30%"
+        },
+        "performance": {
+          "status": "fail",
+          "value": "No data",
+          "note": "Partner Home shows “Data Not Available” for promo revenue, units, lift and discount (YTD)"
+        },
+        "invitations": {
+          "status": "fail",
+          "value": "4 open",
+          "note": "WFNA 5 Days of Deals & WFNA 48HR Sale close 25 Sep; NA Way Day & NA 48HR Sale close 2 Oct"
+        }
+      },
+      "metrics": [
+        {
+          "label": "Programs running now",
+          "value": 8
+        },
+        {
+          "label": "Upcoming events",
+          "value": 4
+        },
+        {
+          "label": "Open invitations",
+          "value": 4,
+          "good": false
+        },
+        {
+          "label": "Live SKUs discounted today",
+          "value": "100%",
+          "good": false
+        },
+        {
+          "label": "Days under discount (next 60)",
+          "value": "60 / 60",
+          "good": false
+        },
+        {
+          "label": "Promotion events on record",
+          "value": 275
+        }
+      ],
+      "findings": [
+        "Q3 Extended Discounts (10% retail / 12% B2B) covers all 4,588 live SKUs from 9 Sep to 19 Nov, with event discounts on top — there is no full-price day for the rest of the quarter.",
+        "Fall Sale (20%) and Q3 Extended (10%) overlap 15–22 Sep; confirm with Wayfair whether they stack or the deeper one wins.",
+        "Back-to-back events: Members Sale 9/23–9/26 → 72 Hour Clearout 9/26–9/29 → Big Furniture 9/29–10/5 → Holiday Deal Week 10/12–10/19.",
+        "Top sellers (BMO1724PI, BLUX2020CIV, BWA2020CLI, BLUX2020CWH, BMGL2032BL) are in every event — 14 discount terms each.",
+        "Fall Sale import: 4,825 SKUs accepted, 796 errored — the 796 are discontinued SKUs, so no action needed.",
+        "Wayfair shows no promotion performance data for this account, so lift cannot be measured from the portal.",
+        "Average selling price is down ~20% YoY while units are down only 5% — deep, constant discounting is not buying volume."
+      ],
+      "actions": [
+        "Decide on Way Day (closes 2 Oct) — Wayfair’s biggest event; submit top sellers only rather than the full catalog.",
+        "Decide on WFNA 5 Days of Deals and WFNA 48HR Sale before 25 Sep.",
+        "Test pulling a set of SKUs out of Q3 Extended Discounts to measure full-price conversion.",
+        "Ask the Wayfair account manager for promotion performance data (lift by event)."
+      ],
+      "tables": [
+        {
+          "title": "Current & upcoming promotions",
+          "note": "From each SKU’s live discount terms (Retail = B2C, Business = B2B). SKUs = live SKUs enrolled.",
+          "columns": [
+            "Promotion",
+            "Customer",
+            "Status",
+            "Start",
+            "End",
+            "SKUs",
+            "Discount"
+          ],
+          "rows": [
+            [
+              "NA Fall Sale - September 2026",
+              "Retail",
+              "Active",
+              "2026-09-15",
+              "2026-09-22",
+              4825,
+              "20%"
+            ],
+            [
+              "NA Fall Sale - September 2026",
+              "Business",
+              "Active",
+              "2026-09-15",
+              "2026-09-22",
+              4825,
+              "22%"
+            ],
+            [
+              "NA Q3 Extended Discounts (Jul–Nov 2026)",
+              "Retail",
+              "Active",
+              "2026-09-09",
+              "2026-11-19",
+              4588,
+              "10%"
+            ],
+            [
+              "NA Q3 Extended Discounts (Jul–Nov 2026)",
+              "Business",
+              "Active",
+              "2026-09-09",
+              "2026-11-19",
+              4588,
+              "12%"
+            ],
+            [
+              "B2B New Discounts",
+              "Business",
+              "Ongoing",
+              "2025-10-14",
+              "Open-ended",
+              4769,
+              "12%"
+            ],
+            [
+              "B2B Bulk Tier (qty 3+)",
+              "Business",
+              "Ongoing",
+              "2025-05-13",
+              "Open-ended",
+              4446,
+              "15%"
+            ],
+            [
+              "Willow Towels 15%",
+              "Business",
+              "Ongoing",
+              "2026-05-15",
+              "Open-ended",
+              341,
+              "15%"
+            ],
+            [
+              "Inventory Rotation",
+              "Business",
+              "Ongoing",
+              "2026-05-15",
+              "Open-ended",
+              158,
+              "15–20%"
+            ],
+            [
+              "Closeout Overage",
+              "Retail",
+              "Ongoing",
+              "2026-05-15",
+              "Open-ended",
+              65,
+              "30%"
+            ],
+            [
+              "Migrated Closeout",
+              "Retail",
+              "Ongoing",
+              "2021-08-04",
+              "Open-ended",
+              13,
+              "0%"
+            ],
+            [
+              "WFNA - Semi Annual Members Sale",
+              "Retail",
+              "Upcoming",
+              "2026-09-23",
+              "2026-09-26",
+              1943,
+              "18%"
+            ],
+            [
+              "WFNA - Semi Annual Members Sale",
+              "Business",
+              "Upcoming",
+              "2026-09-23",
+              "2026-09-26",
+              1943,
+              "19%"
+            ],
+            [
+              "NA 72 Hour Clearout - September 2026",
+              "Retail",
+              "Upcoming",
+              "2026-09-26",
+              "2026-09-29",
+              4588,
+              "23%"
+            ],
+            [
+              "NA 72 Hour Clearout - September 2026",
+              "Business",
+              "Upcoming",
+              "2026-09-26",
+              "2026-09-29",
+              4588,
+              "25%"
+            ],
+            [
+              "NA Big Furniture Sale - September 2026",
+              "Retail",
+              "Upcoming",
+              "2026-09-29",
+              "2026-10-05",
+              4588,
+              "18%"
+            ],
+            [
+              "NA Big Furniture Sale - September 2026",
+              "Business",
+              "Upcoming",
+              "2026-09-29",
+              "2026-10-05",
+              4588,
+              "19%"
+            ],
+            [
+              "NA Holiday Deal Week - October 2026",
+              "Retail",
+              "Upcoming",
+              "2026-10-12",
+              "2026-10-19",
+              4588,
+              "12%"
+            ],
+            [
+              "NA Holiday Deal Week - October 2026",
+              "Business",
+              "Upcoming",
+              "2026-10-12",
+              "2026-10-19",
+              4588,
+              "13%"
+            ]
+          ]
+        },
+        {
+          "title": "Promotion events calendar",
+          "note": "Every event that is open, submitted or running. Deadline = curation date (last day to submit).",
+          "columns": [
+            "Event",
+            "Status",
+            "Submission opened",
+            "Deadline",
+            "Event dates",
+            "Days",
+            "Category"
+          ],
+          "rows": [
+            [
+              "NA Way Day - October 2026",
+              "Open for Submission",
+              "2026-09-16",
+              "2026-10-02",
+              "TBA",
+              "—",
+              "Major Event"
+            ],
+            [
+              "NA 48HR Sale - October 2026",
+              "Open for Submission",
+              "2026-09-16",
+              "2026-10-02",
+              "10/10 – 10/12",
+              2,
+              "Major Shopping Holiday"
+            ],
+            [
+              "WFNA 5 Days of Deals - October 2026",
+              "Open for Submission",
+              "2026-09-15",
+              "2026-09-25",
+              "10/05 – 10/10",
+              5,
+              "Major Shopping Holiday"
+            ],
+            [
+              "WFNA 48HR Sale - October 2026",
+              "Open for Submission",
+              "2026-09-15",
+              "2026-09-25",
+              "10/03 – 10/05",
+              3,
+              "Major Shopping Holiday"
+            ],
+            [
+              "NA Fall Sale Weekend Room - September 2026",
+              "Open (deadline passed)",
+              "2026-09-14",
+              "2026-09-17",
+              "09/19 – 09/22",
+              4,
+              "Major Shopping Holiday"
+            ],
+            [
+              "NA Q3 Priority Product Discounts (Jul–Nov 2026)",
+              "Open (deadline passed)",
+              "2026-07-23",
+              "2026-07-27",
+              "07/28 – 11/19",
+              115,
+              "Extended Event"
+            ],
+            [
+              "NA Big Furniture Sale - September 2026",
+              "Partially Submitted",
+              "2026-08-28",
+              "2026-09-18",
+              "09/29 – 10/05",
+              6,
+              "Major Shopping Holiday"
+            ],
+            [
+              "NA 72 Hour Clearout - September 2026",
+              "Partially Submitted",
+              "2026-08-27",
+              "2026-09-11",
+              "09/26 – 09/29",
+              3,
+              "Clearance"
+            ],
+            [
+              "WFNA - Semi Annual Members Sale - September 2026",
+              "Submitted",
+              "2026-08-30",
+              "2026-09-16",
+              "09/23 – 09/26",
+              4,
+              "Loyalty Exclusive"
+            ],
+            [
+              "NA Fall Sale - September 2026",
+              "Active",
+              "2026-07-30",
+              "2026-08-28",
+              "09/15 – 09/22",
+              7,
+              "Major Shopping Holiday"
+            ],
+            [
+              "NA Q3 Extended Discounts (Jul–Nov 2026)",
+              "Active",
+              "2026-07-23",
+              "2026-07-27",
+              "07/28 – 11/19",
+              115,
+              "Extended Event"
+            ]
+          ]
+        },
+        {
+          "title": "Recent past events (Jun–Sep 2026)",
+          "columns": [
+            "Event",
+            "Event dates",
+            "Days",
+            "Category",
+            "Submitted by"
+          ],
+          "rows": [
+            [
+              "NA 48 Hour Clearance – Base Discounts (LD 4533)",
+              "09/13 – 09/15",
+              2,
+              "Major Shopping Holiday",
+              "Wayfair"
+            ],
+            [
+              "NA 48 Hour Clearance – Deeper Weekend Discounts (LDW 4659)",
+              "09/13 – 09/15",
+              2,
+              "Major Shopping Holiday",
+              "Wayfair"
+            ],
+            [
+              "NA Warehouse Clearout - September 2026",
+              "09/08 – 09/13",
+              5,
+              "Clearance",
+              "—"
+            ],
+            [
+              "NA Labor Day Weekend - September 2026",
+              "09/03 – 09/08",
+              6,
+              "Major Shopping Holiday",
+              "—"
+            ],
+            [
+              "NA Labor Day/Labour Day - August 2026",
+              "08/22 – 09/08",
+              18,
+              "Major Shopping Holiday",
+              "rahul@homeweavers.net"
+            ],
+            [
+              "NA 48HR Sale - August 2026",
+              "08/17 – 08/19",
+              2,
+              "Major Shopping Holiday",
+              "rahul@homeweavers.net"
+            ],
+            [
+              "NA Summer Markdowns - August 2026",
+              "08/11 – 08/17",
+              6,
+              "Major Shopping Holiday",
+              "rahul@homeweavers.net"
+            ],
+            [
+              "NA 72 Hour Clearout - August 2026",
+              "08/08 – 08/11",
+              4,
+              "Clearance",
+              "rahul@homeweavers.net"
+            ],
+            [
+              "Member Pop Up Sale - August 2026",
+              "08/05 – 08/07",
+              3,
+              "Loyalty Exclusive",
+              "rahul@homeweavers.net"
+            ],
+            [
+              "NA 48 HR Sale - August 2026",
+              "08/02 – 08/04",
+              3,
+              "Major Shopping Holiday",
+              "rahul@homeweavers.net"
+            ],
+            [
+              "NA Outdoor Clearance - July 2026",
+              "07/28 – 08/01",
+              5,
+              "Clearance",
+              "rahul@homeweavers.net"
+            ],
+            [
+              "NA Black Friday in July - July 2026",
+              "07/23 – 07/28",
+              6,
+              "Major Event",
+              "support@homeweavers.net"
+            ],
+            [
+              "NA Loyalty Black Friday in July Early Access",
+              "07/21",
+              1,
+              "Loyalty Exclusive",
+              "support@homeweavers.net"
+            ],
+            [
+              "NA Financing Promo - July 2026",
+              "07/13 – 07/19",
+              7,
+              "Major Shopping Holiday",
+              "support@homeweavers.net"
+            ],
+            [
+              "NA 48 HR Sale - July 2026",
+              "07/12 – 07/14",
+              3,
+              "Major Shopping Holiday",
+              "support@homeweavers.net"
+            ],
+            [
+              "NA Summer Flash Sale - July 2026",
+              "07/07 – 07/11",
+              4,
+              "Major Shopping Holiday",
+              "support@homeweavers.net"
+            ],
+            [
+              "NA July Fourth Weekend - July 2026",
+              "07/02 – 07/07",
+              6,
+              "Major Event",
+              "support@homeweavers.net"
+            ],
+            [
+              "NA July Fourth/Canada Day - July 2026",
+              "06/27 – 07/07",
+              10,
+              "Major Shopping Holiday",
+              "support@homeweavers.net"
+            ],
+            [
+              "NA Four Day Flash Sale - June 2026",
+              "06/23 – 06/27",
+              4,
+              "Major Shopping Holiday",
+              "support@homeweavers.net"
+            ],
+            [
+              "NA 72 Hour Clearout - June 2026",
+              "06/20 – 06/23",
+              4,
+              "Clearance",
+              "support@homeweavers.net"
+            ],
+            [
+              "NA Back to School - June 2026",
+              "06/16 – 06/23",
+              7,
+              "Category Sales",
+              "support@homeweavers.net"
+            ],
+            [
+              "NA Hot Summer Sale - June 2026",
+              "06/11 – 06/16",
+              6,
+              "Major Shopping Holiday",
+              "support@homeweavers.net"
+            ],
+            [
+              "NA 48HR Sale - June 2026",
+              "06/06 – 06/08",
+              3,
+              "Major Shopping Holiday",
+              "support@homeweavers.net"
+            ]
+          ]
+        }
+      ],
+      "source": "Promotions (275 events) · per-SKU discount terms for all 5,621 parts",
+      "scoreNote": "100 − 15 (invitations closing within 7 days not submitted) − 15 (catalog discounted on 60 of the next 60 days) − 10 (no promotion performance data) = 60."
+    },
+    "inventory-health": {
+      "score": 77,
+      "headline": "1,080 of 4,719 active products are out of stock (77% in stock); feed is current",
+      "checks": {
+        "in-stock-rate": {
+          "status": "warn",
+          "value": "77.1%",
+          "note": "3,639 of 4,719 active products in stock"
+        },
+        "oos-count": {
+          "status": "fail",
+          "value": "1,080",
+          "note": "Home dashboard “Not In Stock”; Inventory shows ~1.2k unpurchasable"
+        },
+        "top-seller-oos": {
+          "status": "pass",
+          "value": "0 / 50",
+          "note": "All top-50 sellers are live"
+        },
+        "feed-freshness": {
+          "status": "pass",
+          "value": "< 1 hour",
+          "note": "In-stock updates “An hour ago”"
+        },
+        "lead-time": {
+          "status": "pass",
+          "value": "1.6 vs 1.7 days",
+          "note": "Actual vs expected order-to-ship; Wayfair suggests reviewing lead-time settings"
+        },
+        "warehouse-stock": {
+          "status": "na",
+          "note": "CastleGate not checked yet"
+        }
+      },
+      "metrics": [
+        {
+          "label": "Active products",
+          "value": "4,719"
+        },
+        {
+          "label": "Not in stock",
+          "value": "1,080",
+          "good": false
+        },
+        {
+          "label": "In-stock rate",
+          "value": "77.1%"
+        }
+      ],
+      "findings": [
+        "About 1 in 4 active products can’t be bought because stock is 0.",
+        "Inventory feed is fresh (updated within the hour), so the gaps are real stock-outs, not stale data."
+      ],
+      "actions": [
+        "Export the Availability list and re-stock or discontinue the 1,080 out-of-stock products.",
+        "Prioritise out-of-stock variants of families that sell (e.g. BWA4PC…, BMO…, BALL…)."
+      ],
+      "source": "Inventory Management · Home dashboard",
+      "scoreNote": "In-stock rate 77.1% → 77. No top-50 stock-outs, feed fresh."
+    },
+    "fulfillment-health": {
+      "score": 82,
+      "headline": "Ships on time with near-zero cancellations; induction fill rate (87%) is below target",
+      "checks": {
+        "active-orders": {
+          "status": "pass",
+          "value": 23,
+          "note": "22 new (ship by 21 Sep) · 1 overdue"
+        },
+        "overdue": {
+          "status": "warn",
+          "value": 1,
+          "note": "CS680345833 (LS35TA, $31.19) — picked up 14 Sep, awaiting carrier scan"
+        },
+        "on-time": {
+          "status": "pass",
+          "value": "0.0% delayed",
+          "note": "Order delay rate 0.0% over 4 weeks"
+        },
+        "fill-rate": {
+          "status": "warn",
+          "value": "87.2%",
+          "note": "Induction fill rate (4 weeks) — Wayfair alert: Low Induction Fill Rate. ASN fill rate 99.4%"
+        },
+        "cancellations": {
+          "status": "pass",
+          "value": "0.1%",
+          "note": "$53.67 cancellation charge (week of 30 Aug)"
+        },
+        "tracking": {
+          "status": "pass",
+          "value": "99.4%",
+          "note": "ASN fill rate"
+        }
+      },
+      "metrics": [
+        {
+          "label": "Orders (4 weeks)",
+          "value": "1,269"
+        },
+        {
+          "label": "Induction fill rate",
+          "value": "87.2%",
+          "good": false
+        },
+        {
+          "label": "ASN fill rate",
+          "value": "99.4%",
+          "good": true
+        },
+        {
+          "label": "Order-to-ship days",
+          "value": "1.6 (target 1.7)",
+          "good": true
+        },
+        {
+          "label": "Delivery days",
+          "value": "4.7 (advertised 5.3)",
+          "good": true
+        },
+        {
+          "label": "Fast-delivery badge",
+          "value": "1.0%",
+          "good": false
+        }
+      ],
+      "findings": [
+        "Orders ship in 1.6 days (vs 1.7 expected) and arrive in 4.7 days (vs 5.3 advertised).",
+        "Induction fill rate — parcels scanned by the carrier on the expected day — is 87.2%, triggering Wayfair’s alert.",
+        "Only 1% of orders carry a fast-delivery badge; 0% 1-day or 2-day. Faster badges lift conversion.",
+        "One order (CS680345833) has sat “picked up, awaiting carrier scan” since 14 Sep."
+      ],
+      "actions": [
+        "Chase FedEx on CS680345833 and check pickup scanning at the NJ warehouse.",
+        "Tighten carrier hand-off so parcels are scanned the same day (fixes induction fill rate).",
+        "Review lead-time settings — a 1-day handling time could earn fast-delivery badges."
+      ],
+      "tables": [
+        {
+          "title": "Weekly delays & cancellations",
+          "columns": [
+            "Week",
+            "Orders",
+            "Delay rate",
+            "Supplier cancel rate",
+            "Delay charge",
+            "Cancellation charge"
+          ],
+          "rows": [
+            [
+              "08/23 – 08/29",
+              263,
+              "0.00%",
+              "0.00%",
+              "$0.00",
+              "$0.00"
+            ],
+            [
+              "08/30 – 09/05",
+              292,
+              "0.00%",
+              "0.33%",
+              "$0.00",
+              "$53.67"
+            ],
+            [
+              "09/06 – 09/12",
+              357,
+              "0.00%",
+              "0.00%",
+              "$0.00",
+              "$0.00"
+            ],
+            [
+              "09/13 – 09/19",
+              63,
+              "0.00%",
+              "0.00%",
+              "$0.00",
+              "$0.00"
+            ]
+          ]
+        },
+        {
+          "title": "Open orders",
+          "columns": [
+            "Order #",
+            "Parts (qty)",
+            "Value",
+            "Order date",
+            "Ship by",
+            "Status"
+          ],
+          "rows": [
+            [
+              "CS680345833",
+              "LS35TA (1)",
+              "$31.19",
+              "2026-09-13",
+              "2026-09-14",
+              "OVERDUE · Picked up, awaiting carrier scan"
+            ],
+            [
+              "CA681328912",
+              "BCL1724GY (1)",
+              "$7.99",
+              "2026-09-18",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681306055",
+              "BMO2020PU (1), BBE2440PU1 (1)",
+              "$31.98",
+              "2026-09-18",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681308421",
+              "BWA1730SWH (1)",
+              "$8.39",
+              "2026-09-18",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681317537",
+              "BMGL2154BL (1)",
+              "$19.19",
+              "2026-09-18",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681330959",
+              "BFA2154BL (1)",
+              "$21.59",
+              "2026-09-18",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681331814",
+              "BWA1730SRB (1), BWA30RRB (1)",
+              "$25.58",
+              "2026-09-18",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681334640",
+              "BWA1818LA (1)",
+              "$8.79",
+              "2026-09-18",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681339061",
+              "BMO2134PI (1), BMO1724PI (1), BMO2440BLUE (1)",
+              "$48.77",
+              "2026-09-18",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681347411",
+              "BGRD1724CO (2)",
+              "$15.98",
+              "2026-09-18",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681352406",
+              "BMO1724PI (1)",
+              "$9.59",
+              "2026-09-18",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681365212",
+              "BMO4PC18172120PI (1)",
+              "$45.59",
+              "2026-09-18",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681367597",
+              "BALL2020SA (1), BALL2020TQ (1)",
+              "$14.98",
+              "2026-09-18",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681382118",
+              "BALL30RIV (1)",
+              "$18.40",
+              "2026-09-18",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681390005",
+              "BGRD2440CO (1), BGRD1724SA (1)",
+              "$25.58",
+              "2026-09-18",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681402339",
+              "BHAM2020NA (1), BHAM1724NA (1)",
+              "$15.58",
+              "2026-09-18",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681407392",
+              "BMO1724NV (1)",
+              "$9.59",
+              "2026-09-18",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681414042",
+              "BCL2020CH (1)",
+              "$12.00",
+              "2026-09-18",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681415806",
+              "BLUX2020CBL (1)",
+              "$7.99",
+              "2026-09-18",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681423695",
+              "BWA3PC172122TC (1)",
+              "$41.59",
+              "2026-09-18",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681424359",
+              "BALL1724LI (1), BALL2020LI (1)",
+              "$15.98",
+              "2026-09-18",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681431655",
+              "BWA5PC1721201810TLA (1)",
+              "$44.79",
+              "2026-09-19",
+              "2026-09-21",
+              "New"
+            ],
+            [
+              "CS681433063",
+              "BMESS2020LI (1)",
+              "$12.00",
+              "2026-09-19",
+              "2026-09-21",
+              "New"
+            ]
+          ]
+        }
+      ],
+      "source": "Fulfillment Performance Diagnostic (last 4 weeks) · Dropship Orders",
+      "scoreNote": "Start 87.2 (induction fill rate) − 5 (1 overdue order) − 0.2 (0.1% cancellations × 2) = 82."
+    },
+    "returns-health": {
+      "score": 69,
+      "headline": "Damage & incidents (2.51%) are under the 3% allowance; buyer’s-remorse returns are 7.83%",
+      "checks": {
+        "return-rate": {
+          "status": "warn",
+          "value": "7.83%",
+          "note": "Buyer’s-remorse returns — 1 product class below class average"
+        },
+        "damage-rate": {
+          "status": "pass",
+          "value": "2.51%",
+          "note": "Overall incident rate vs 3.00% Damage & Defect Allowance"
+        },
+        "pending-rmas": {
+          "status": "na",
+          "note": "Not checked (Order Management → Pending RMAs)"
+        },
+        "chargebacks": {
+          "status": "pass",
+          "value": "$53.67",
+          "note": "One cancellation charge in 4 weeks"
+        },
+        "fees": {
+          "status": "pass",
+          "value": "$0",
+          "note": "No replacement-part cancellation deductions; 1 part shipped (100%)"
+        }
+      },
+      "metrics": [
+        {
+          "label": "Damage & Defect Allowance",
+          "value": "3.00%"
+        },
+        {
+          "label": "Overall incident rate",
+          "value": "2.51%",
+          "good": true
+        },
+        {
+          "label": "Buyer’s-remorse returns",
+          "value": "7.83%",
+          "good": false
+        },
+        {
+          "label": "Replacement parts shipped",
+          "value": "100%",
+          "good": true
+        }
+      ],
+      "findings": [
+        "Incidents (2.51%) stay inside the 3.00% DDA, so no damage chargebacks.",
+        "Buyer’s-remorse returns at 7.83% are high for bath textiles; one class is below its class average."
+      ],
+      "actions": [
+        "Open “Show more details” in Incidents & Resolutions to find which class drives returns, then fix sizes/colours/photos on those listings.",
+        "Consider applying to the Supplier Transfers Program (Wayfair says it cuts incidents 20–30%)."
+      ],
+      "source": "Incidents and Resolutions dashboard (18 Mar – 18 Sep 2026)",
+      "scoreNote": "100 − 23.5 (7.83% returns × 3) − 7.5 (2.51% incidents × 3) = 69."
+    },
+    "sales-performance": {
+      "score": 48,
+      "headline": "August revenue −24.7% YoY; traffic −60%; 72% of live SKUs sold nothing in 90 days",
+      "checks": {
+        "revenue": {
+          "status": "fail",
+          "value": "$21,696",
+          "note": "−24.7% vs Aug 2025"
+        },
+        "units": {
+          "status": "warn",
+          "value": "1,362",
+          "note": "−5.4% YoY"
+        },
+        "orders": {
+          "status": "warn",
+          "value": "1,223",
+          "note": "−7.6% YoY"
+        },
+        "traffic": {
+          "status": "fail",
+          "value": "9,085 visits",
+          "note": "−60.0% YoY"
+        },
+        "conversion": {
+          "status": "pass",
+          "value": "6.13%",
+          "note": "+116% YoY"
+        },
+        "category-mix": {
+          "status": "warn",
+          "value": "96.7%",
+          "note": "Bath Rugs & Mats share of August revenue"
+        },
+        "zero-sellers": {
+          "status": "fail",
+          "value": "3,325",
+          "note": "72% of 4,588 live SKUs had no sales in the last 90 days"
+        }
+      },
+      "metrics": [
+        {
+          "label": "Revenue (Aug)",
+          "value": "$21,696",
+          "change": "24.7% YoY",
+          "dir": "down",
+          "good": false
+        },
+        {
+          "label": "Units (Aug)",
+          "value": "1,362",
+          "change": "5.4% YoY",
+          "dir": "down",
+          "good": false
+        },
+        {
+          "label": "Orders (Aug)",
+          "value": "1,223",
+          "change": "7.6% YoY",
+          "dir": "down",
+          "good": false
+        },
+        {
+          "label": "Visits (Aug)",
+          "value": "9,085",
+          "change": "60.0% YoY",
+          "dir": "down",
+          "good": false
+        },
+        {
+          "label": "Conversion (Aug)",
+          "value": "6.13%",
+          "change": "116% YoY",
+          "dir": "up",
+          "good": true
+        },
+        {
+          "label": "Avg order value",
+          "value": "$17.74"
+        },
+        {
+          "label": "Revenue (last 90 days)",
+          "value": "$69,428"
+        },
+        {
+          "label": "SKUs with a sale (90d)",
+          "value": "1,333"
+        }
+      ],
+      "findings": [
+        "Revenue fell much faster than units (−24.7% vs −5.4%): the average selling price dropped ~20%, in line with continuous discounting.",
+        "Visits fell 60% while conversion more than doubled — fewer, better-qualified shoppers. Lost ad visibility (see Advertising) is a likely contributor.",
+        "Bath Rugs & Mats is 96.7% of revenue ($20,913); Bath Towels grew from a tiny base ($404, +361%); Area Rugs fell 48%.",
+        "Revenue is spread thin: the top 20 SKUs are 11.5% of 90-day revenue and the top 100 are 31.8%.",
+        "Only 1,333 SKUs sold anything in 90 days; 3,325 live SKUs sold nothing."
+      ],
+      "actions": [
+        "Restart advertising on the top 100 SKUs to recover traffic.",
+        "Prune or consolidate zero-sale variants so traffic concentrates on listings that convert.",
+        "Grow Bath Towels (fast-growing) with ads and Way Day submissions."
+      ],
+      "tables": [
+        {
+          "title": "Weekly trend (August 2026)",
+          "columns": [
+            "Week",
+            "Revenue",
+            "Orders",
+            "Units",
+            "Visits",
+            "Conversion"
+          ],
+          "rows": [
+            [
+              "07/26 – 08/01",
+              "$5,217.90",
+              307,
+              336,
+              7390,
+              "2.50%"
+            ],
+            [
+              "08/09 – 08/15",
+              "$4,422.30",
+              276,
+              315,
+              1820,
+              "5.99%"
+            ],
+            [
+              "08/16 – 08/22",
+              "$4,688.10",
+              265,
+              292,
+              1694,
+              "7.08%"
+            ],
+            [
+              "08/23 – 08/29",
+              "$5,573.60",
+              294,
+              321,
+              1193,
+              "11.15%"
+            ],
+            [
+              "08/30 – 09/05",
+              "$6,068.90",
+              295,
+              329,
+              439,
+              "11.16%"
+            ]
+          ]
+        },
+        {
+          "title": "Categories (August 2026)",
+          "columns": [
+            "Category",
+            "Products",
+            "Revenue",
+            "Revenue YoY",
+            "Units",
+            "Units YoY"
+          ],
+          "rows": [
+            [
+              "Bath Rugs & Mats",
+              2730,
+              "$20,913.10",
+              "−26.09%",
+              1329,
+              "−6.80%"
+            ],
+            [
+              "Bath Towels",
+              1737,
+              "$403.90",
+              "+360.70%",
+              22,
+              "+2100.00%"
+            ],
+            [
+              "Area Rugs",
+              187,
+              "$231.73",
+              "−47.92%",
+              3,
+              "−75.00%"
+            ],
+            [
+              "Bath Accessories",
+              13,
+              "$41.24",
+              "N/A",
+              4,
+              "N/A"
+            ],
+            [
+              "Curtains & Drapes",
+              5,
+              "$34.48",
+              "N/A",
+              3,
+              "N/A"
+            ],
+            [
+              "Shower Curtains",
+              12,
+              "$11.33",
+              "N/A",
+              1,
+              "N/A"
+            ],
+            [
+              "Blankets And Throws",
+              16,
+              "$0.00",
+              "N/A",
+              0,
+              "N/A"
+            ],
+            [
+              "Door Stops",
+              26,
+              "$0.00",
+              "N/A",
+              0,
+              "N/A"
+            ]
+          ]
+        },
+        {
+          "title": "Top 100 SKUs (last 90 days)",
+          "columns": [
+            "#",
+            "Part #",
+            "Listing",
+            "Status",
+            "Revenue",
+            "Units",
+            "Sales trend",
+            "Conversion",
+            "Visits",
+            "Impression pctl",
+            "Rating",
+            "Reviews",
+            "Missing attrs",
+            "Launched"
+          ],
+          "rows": [
+            [
+              1,
+              "BWA4PC17212022LI",
+              "DRBH6308",
+              "Live",
+              "$930.08",
+              19,
+              "-14.9%",
+              "0.93%",
+              858,
+              "100",
+              "3.81",
+              1117,
+              133,
+              "2025-09-04"
+            ],
+            [
+              2,
+              "BALL3PC172121BL",
+              "FBWX1427",
+              "Live",
+              "$696.24",
+              21,
+              "+58.8%",
+              "1.27%",
+              790,
+              "99",
+              "4.39",
+              191,
+              77,
+              "2025-09-04"
+            ],
+            [
+              3,
+              "BWA4PC17212022TC",
+              "DRBH6308",
+              "Live",
+              "$621.23",
+              13,
+              "+81.1%",
+              "1.3%",
+              308,
+              "100",
+              "3.81",
+              1117,
+              133,
+              "2025-09-04"
+            ],
+            [
+              4,
+              "BWA4PC17212022LA",
+              "DRBH6308",
+              "Live",
+              "$590.65",
+              13,
+              "+17.8%",
+              "3.8%",
+              184,
+              "100",
+              "3.81",
+              1117,
+              133,
+              "2025-09-04"
+            ],
+            [
+              5,
+              "BLUX2PC1721TC",
+              "FBWX1358",
+              "Live",
+              "$430.61",
+              24,
+              "+100.5%",
+              "1.07%",
+              652,
+              "100",
+              "4.47",
+              74,
+              297,
+              "2025-09-04"
+            ],
+            [
+              6,
+              "BALL5PCBL",
+              "FBWX1430",
+              "Live",
+              "$380.49",
+              6,
+              "+121.1%",
+              "1.24%",
+              323,
+              "98",
+              "4.35",
+              17,
+              77,
+              "2025-09-04"
+            ],
+            [
+              7,
+              "TWI12PC131627YE",
+              "FBWX2164",
+              "Live",
+              "$378.84",
+              10,
+              "+933.4%",
+              "1.75%",
+              342,
+              "83",
+              "4.86",
+              7,
+              976,
+              "2026-04-30"
+            ],
+            [
+              8,
+              "BMO1724PI",
+              "FBWX1127",
+              "Live",
+              "$368.89",
+              40,
+              "+19%",
+              "0.61%",
+              1964,
+              "100",
+              "4.43",
+              948,
+              452,
+              "2025-09-04"
+            ],
+            [
+              9,
+              "BALL3PC172120BL",
+              "FBWX1428",
+              "Live",
+              "$346.31",
+              13,
+              "-9.1%",
+              "1.19%",
+              420,
+              "99",
+              "4.17",
+              351,
+              77,
+              "2025-09-04"
+            ],
+            [
+              10,
+              "BBE3PC172120PI",
+              "FBWX1122",
+              "Live",
+              "$326.09",
+              10,
+              "+98.5%",
+              "0.33%",
+              305,
+              "98",
+              "4.26",
+              260,
+              91,
+              "2025-09-04"
+            ],
+            [
+              11,
+              "ABEE810WH",
+              "FBWX1347",
+              "Live",
+              "$315.86",
+              3,
+              "+46.8%",
+              "2.06%",
+              97,
+              "94",
+              "5",
+              5,
+              51,
+              "2025-09-04"
+            ],
+            [
+              12,
+              "BWA5PCRB",
+              "DRBH6314",
+              "Live",
+              "$306.74",
+              5,
+              "+76.4%",
+              "2.33%",
+              86,
+              "99",
+              "4.13",
+              126,
+              152,
+              "2025-09-04"
+            ],
+            [
+              13,
+              "BMO2134PI",
+              "FBWX1127",
+              "Live",
+              "$300.45",
+              19,
+              "-21.4%",
+              "3.33%",
+              270,
+              "100",
+              "4.43",
+              948,
+              452,
+              "2025-09-04"
+            ],
+            [
+              14,
+              "BALL3PC172120PI",
+              "FBWX1428",
+              "Live",
+              "$294.86",
+              11,
+              "-34.8%",
+              "1.03%",
+              870,
+              "99",
+              "4.17",
+              351,
+              77,
+              "2025-09-04"
+            ],
+            [
+              15,
+              "BWA4PC17212022BL",
+              "DRBH6308",
+              "Live",
+              "$292.65",
+              6,
+              "-4.3%",
+              "1.75%",
+              171,
+              "100",
+              "3.81",
+              1117,
+              133,
+              "2025-09-03"
+            ],
+            [
+              16,
+              "BWA4PC17212022LGY",
+              "DRBH6308",
+              "Live",
+              "$288.59",
+              7,
+              "+61.2%",
+              "3.55%",
+              141,
+              "100",
+              "3.81",
+              1117,
+              133,
+              "2025-09-04"
+            ],
+            [
+              17,
+              "BMGL2032BL",
+              "FBWX1943",
+              "Live",
+              "$285.81",
+              25,
+              "-0.5%",
+              "2.7%",
+              148,
+              "98",
+              "4.23",
+              48,
+              196,
+              "2025-09-04"
+            ],
+            [
+              18,
+              "TWI24PC13131627YE",
+              "FBWX2164",
+              "Live",
+              "$284.03",
+              5,
+              "—",
+              "4.35%",
+              69,
+              "83",
+              "4.86",
+              7,
+              976,
+              "2026-04-30"
+            ],
+            [
+              19,
+              "BWA30RBLK",
+              "FBWX1438",
+              "Live",
+              "$283.24",
+              19,
+              "-7.5%",
+              "0.89%",
+              785,
+              "99",
+              "4.23",
+              218,
+              266,
+              "2025-09-04"
+            ],
+            [
+              20,
+              "BWA4PC17212022CO",
+              "DRBH6308",
+              "Live",
+              "$274.65",
+              7,
+              "+16.5%",
+              "3.5%",
+              143,
+              "100",
+              "3.81",
+              1117,
+              133,
+              "2025-09-04"
+            ],
+            [
+              21,
+              "BWA4PC18202122RB",
+              "FBWX1454",
+              "Live",
+              "$274.10",
+              6,
+              "-12.9%",
+              "1.83%",
+              109,
+              "99",
+              "4.08",
+              324,
+              133,
+              "2025-09-04"
+            ],
+            [
+              22,
+              "BALL3PC172120LI",
+              "FBWX1428",
+              "Live",
+              "$259.77",
+              10,
+              "-10.6%",
+              "2.66%",
+              263,
+              "99",
+              "4.17",
+              351,
+              77,
+              "2025-09-04"
+            ],
+            [
+              23,
+              "BLUX2020CIV",
+              "FBWX1913",
+              "Live",
+              "$254.38",
+              38,
+              "+50.4%",
+              "2.27%",
+              836,
+              "98",
+              "4.04",
+              72,
+              110,
+              "2025-09-04"
+            ],
+            [
+              24,
+              "BWA5PC1721201810TTC",
+              "FBWX1607",
+              "Live",
+              "$251.37",
+              6,
+              "+3%",
+              "0%",
+              63,
+              "99",
+              "3.97",
+              99,
+              187,
+              "2025-09-04"
+            ],
+            [
+              25,
+              "BWA5PCCO",
+              "DRBH6314",
+              "Live",
+              "$250.34",
+              5,
+              "-54.4%",
+              "0.63%",
+              478,
+              "99",
+              "4.13",
+              126,
+              152,
+              "2025-09-04"
+            ],
+            [
+              26,
+              "BWA4PC18202122TC",
+              "FBWX1454",
+              "Live",
+              "$239.92",
+              5,
+              "-16.7%",
+              "0%",
+              85,
+              "99",
+              "4.08",
+              324,
+              133,
+              "2025-09-04"
+            ],
+            [
+              27,
+              "BWA4PC17212022NA",
+              "DRBH6308",
+              "Live",
+              "$238.90",
+              5,
+              "+164.3%",
+              "2.99%",
+              134,
+              "100",
+              "3.81",
+              1117,
+              133,
+              "2025-09-03"
+            ],
+            [
+              28,
+              "BWA2020CLI",
+              "FBWX1491",
+              "Live",
+              "$228.05",
+              33,
+              "-25%",
+              "1.12%",
+              806,
+              "99",
+              "3.83",
+              637,
+              152,
+              "2025-09-03"
+            ],
+            [
+              29,
+              "BWA4PC17212022RB",
+              "DRBH6308",
+              "Live",
+              "$227.74",
+              5,
+              "-1.3%",
+              "2.27%",
+              176,
+              "100",
+              "3.81",
+              1117,
+              133,
+              "2025-09-04"
+            ],
+            [
+              30,
+              "BWA4PC18202122BLK",
+              "FBWX1454",
+              "Live",
+              "$223.26",
+              5,
+              "+413.7%",
+              "1.85%",
+              54,
+              "99",
+              "4.08",
+              324,
+              133,
+              "2025-09-04"
+            ],
+            [
+              31,
+              "BMO2PC1721PI",
+              "HSHM2194",
+              "Live",
+              "$220.38",
+              12,
+              "-28.9%",
+              "0.48%",
+              1455,
+              "100",
+              "4.38",
+              93,
+              63,
+              "2025-09-04"
+            ],
+            [
+              32,
+              "BMO4PC17212021NA",
+              "FBWX1138",
+              "Live",
+              "$219.56",
+              4,
+              "—",
+              "2.99%",
+              67,
+              "98",
+              "4.47",
+              115,
+              81,
+              "2025-09-04"
+            ],
+            [
+              33,
+              "BALL2154BL",
+              "RBSD7856",
+              "Live",
+              "$214.99",
+              11,
+              "-1.8%",
+              "1.92%",
+              312,
+              "100",
+              "4.09",
+              1314,
+              952,
+              "2025-09-04"
+            ],
+            [
+              34,
+              "BWA4PC18202122CH",
+              "FBWX1454",
+              "Live",
+              "$212.68",
+              4,
+              "-60.5%",
+              "0.14%",
+              709,
+              "99",
+              "4.08",
+              324,
+              133,
+              "2025-09-04"
+            ],
+            [
+              35,
+              "BWA3PC172120LI",
+              "WNPP2016",
+              "Live",
+              "$204.07",
+              8,
+              "-10.1%",
+              "1.37%",
+              366,
+              "99",
+              "3.84",
+              514,
+              152,
+              "2025-09-04"
+            ],
+            [
+              36,
+              "BHAM2154NA",
+              "FBWX1402",
+              "Live",
+              "$201.09",
+              10,
+              "+104%",
+              "0.87%",
+              575,
+              "100",
+              "4.39",
+              194,
+              209,
+              "2025-09-04"
+            ],
+            [
+              37,
+              "BMCC6PCGR",
+              "FBWX2102",
+              "Live (some stores)",
+              "$197.01",
+              3,
+              "+183.1%",
+              "3.7%",
+              27,
+              "94",
+              "—",
+              0,
+              48,
+              "2025-09-05"
+            ],
+            [
+              38,
+              "BWA4PC18202122GRFT",
+              "FBWX1454",
+              "Live",
+              "$194.13",
+              4,
+              "-20.2%",
+              "1.92%",
+              104,
+              "99",
+              "4.08",
+              324,
+              133,
+              "2025-09-04"
+            ],
+            [
+              39,
+              "BLUX2134TC",
+              "FBWX1917",
+              "Not Live",
+              "$192.70",
+              19,
+              "+26.7%",
+              "—",
+              0,
+              "0",
+              "3.88",
+              51,
+              0,
+              "2025-09-04"
+            ],
+            [
+              40,
+              "BMO4PC17212021PI",
+              "FBWX1138",
+              "Live",
+              "$192.53",
+              3,
+              "—",
+              "5%",
+              40,
+              "98",
+              "4.47",
+              115,
+              81,
+              "2025-09-04"
+            ],
+            [
+              41,
+              "BALL2PC1721PI",
+              "FBWX1426",
+              "Live",
+              "$189.44",
+              10,
+              "+47.1%",
+              "1.55%",
+              194,
+              "99",
+              "4.18",
+              197,
+              77,
+              "2025-09-04"
+            ],
+            [
+              42,
+              "BWA4PC18202122LA",
+              "FBWX1454",
+              "Live",
+              "$187.76",
+              4,
+              "-65.8%",
+              "2.25%",
+              89,
+              "99",
+              "4.08",
+              324,
+              133,
+              "2025-09-04"
+            ],
+            [
+              43,
+              "BWA5PCBL",
+              "DRBH6314",
+              "Live",
+              "$187.75",
+              3,
+              "+5.2%",
+              "3.85%",
+              52,
+              "99",
+              "4.13",
+              126,
+              152,
+              "2025-09-04"
+            ],
+            [
+              44,
+              "BALL3PC172121LI",
+              "FBWX1427",
+              "Live",
+              "$187.47",
+              5,
+              "+2.2%",
+              "1.55%",
+              193,
+              "99",
+              "4.39",
+              191,
+              77,
+              "2025-09-04"
+            ],
+            [
+              45,
+              "BLUX2PC1724TC",
+              "FBWX1358",
+              "Live",
+              "$185.61",
+              8,
+              "+337.1%",
+              "2.38%",
+              84,
+              "100",
+              "4.47",
+              74,
+              297,
+              "2025-09-04"
+            ],
+            [
+              46,
+              "BALL2PC1721BL",
+              "FBWX1426",
+              "Live",
+              "$185.12",
+              10,
+              "+30.8%",
+              "0.8%",
+              503,
+              "99",
+              "4.18",
+              197,
+              77,
+              "2025-09-04"
+            ],
+            [
+              47,
+              "BWA2440LA",
+              "FBWX1490",
+              "Live",
+              "$185.00",
+              11,
+              "+1027.4%",
+              "3.31%",
+              121,
+              "99",
+              "3.9",
+              803,
+              532,
+              "2025-09-04"
+            ],
+            [
+              48,
+              "TWI24PC13131627BLK",
+              "FBWX2164",
+              "Live",
+              "$184.15",
+              3,
+              "—",
+              "25%",
+              12,
+              "83",
+              "4.86",
+              7,
+              976,
+              "2026-04-30"
+            ],
+            [
+              49,
+              "BLUX3PC172121TC",
+              "FBWX1915",
+              "Live",
+              "$183.86",
+              5,
+              "—",
+              "1.16%",
+              86,
+              "98",
+              "4.18",
+              11,
+              100,
+              "2025-09-04"
+            ],
+            [
+              50,
+              "BWA4PC18202122PK",
+              "FBWX1454",
+              "Live",
+              "$183.74",
+              4,
+              "+296.3%",
+              "1.28%",
+              78,
+              "99",
+              "4.08",
+              324,
+              133,
+              "2025-09-04"
+            ],
+            [
+              51,
+              "BMO2154LI",
+              "FBWX1127",
+              "Live",
+              "$182.64",
+              7,
+              "+45.3%",
+              "5.71%",
+              70,
+              "100",
+              "4.43",
+              948,
+              452,
+              "2025-09-04"
+            ],
+            [
+              52,
+              "BMO2020PI",
+              "FBWX1128",
+              "Live",
+              "$181.52",
+              20,
+              "-28.4%",
+              "0.97%",
+              514,
+              "98",
+              "4.27",
+              248,
+              126,
+              "2025-09-04"
+            ],
+            [
+              53,
+              "BALL3PC172120PU",
+              "FBWX1428",
+              "Live",
+              "$181.44",
+              7,
+              "+0.6%",
+              "2.73%",
+              110,
+              "99",
+              "4.17",
+              351,
+              77,
+              "2025-09-04"
+            ],
+            [
+              54,
+              "BMO1730SPI",
+              "FBWX1952",
+              "Live",
+              "$180.61",
+              16,
+              "+107.6%",
+              "2.91%",
+              103,
+              "98",
+              "4.42",
+              52,
+              117,
+              "2025-09-04"
+            ],
+            [
+              55,
+              "BMO2PC1721BLUE",
+              "HSHM2194",
+              "Live",
+              "$179.68",
+              7,
+              "+150.9%",
+              "1.6%",
+              188,
+              "100",
+              "4.38",
+              93,
+              63,
+              "2025-09-04"
+            ],
+            [
+              56,
+              "BHAM2154GY",
+              "FBWX1402",
+              "Live",
+              "$178.01",
+              13,
+              "+30.8%",
+              "0.9%",
+              669,
+              "100",
+              "4.39",
+              194,
+              209,
+              "2025-09-04"
+            ],
+            [
+              57,
+              "BMO1724LI",
+              "FBWX1127",
+              "Live",
+              "$178.01",
+              21,
+              "+69.6%",
+              "4.39%",
+              296,
+              "100",
+              "4.43",
+              948,
+              452,
+              "2025-09-04"
+            ],
+            [
+              58,
+              "BWA1730SWH",
+              "FBWX1590",
+              "Live",
+              "$177.54",
+              23,
+              "+209.6%",
+              "1.16%",
+              432,
+              "98",
+              "4.45",
+              40,
+              152,
+              "2025-09-04"
+            ],
+            [
+              59,
+              "BALL4PC17212021LI",
+              "FBWX1429",
+              "Live",
+              "$176.75",
+              4,
+              "+96.9%",
+              "4.35%",
+              69,
+              "99",
+              "4.35",
+              60,
+              77,
+              "2025-09-04"
+            ],
+            [
+              60,
+              "BMGL2440BL",
+              "FBWX1943",
+              "Live",
+              "$176.37",
+              10,
+              "-53.7%",
+              "0.64%",
+              628,
+              "98",
+              "4.23",
+              48,
+              196,
+              "2025-09-05"
+            ],
+            [
+              61,
+              "TWI24PC13131627WH",
+              "FBWX2164",
+              "Live",
+              "$169.98",
+              3,
+              "+207.7%",
+              "5.56%",
+              18,
+              "83",
+              "4.86",
+              7,
+              976,
+              "2026-04-30"
+            ],
+            [
+              62,
+              "BLUX2020CWH",
+              "FBWX1913",
+              "Live",
+              "$169.82",
+              26,
+              "+94.2%",
+              "9.09%",
+              110,
+              "98",
+              "4.04",
+              72,
+              110,
+              "2025-09-04"
+            ],
+            [
+              63,
+              "BMO2440PI",
+              "FBWX1127",
+              "Live",
+              "$167.11",
+              9,
+              "+151.5%",
+              "2.09%",
+              191,
+              "100",
+              "4.43",
+              948,
+              452,
+              "2025-09-04"
+            ],
+            [
+              64,
+              "BMO2440BLK",
+              "FBWX1127",
+              "Live",
+              "$164.78",
+              7,
+              "—",
+              "5.56%",
+              36,
+              "100",
+              "4.43",
+              948,
+              452,
+              "2025-09-05"
+            ],
+            [
+              65,
+              "BWA30RRB",
+              "FBWX1438",
+              "Live",
+              "$162.54",
+              13,
+              "-35.8%",
+              "2.55%",
+              235,
+              "99",
+              "4.23",
+              218,
+              266,
+              "2025-09-04"
+            ],
+            [
+              66,
+              "BMO2134LI",
+              "FBWX1127",
+              "Live",
+              "$161.43",
+              10,
+              "-6%",
+              "3%",
+              100,
+              "100",
+              "4.43",
+              948,
+              452,
+              "2025-09-04"
+            ],
+            [
+              67,
+              "BMO2154PI",
+              "FBWX1127",
+              "Live",
+              "$160.71",
+              7,
+              "-26%",
+              "2.08%",
+              192,
+              "100",
+              "4.43",
+              948,
+              452,
+              "2025-09-04"
+            ],
+            [
+              68,
+              "BWA2134LA",
+              "FBWX1490",
+              "Live",
+              "$159.84",
+              14,
+              "-23.9%",
+              "3.02%",
+              199,
+              "99",
+              "3.9",
+              803,
+              532,
+              "2025-09-04"
+            ],
+            [
+              69,
+              "BWA5PC1721201810TCH",
+              "FBWX1607",
+              "Live",
+              "$159.68",
+              5,
+              "-0.6%",
+              "1.03%",
+              195,
+              "99",
+              "3.97",
+              99,
+              187,
+              "2025-09-04"
+            ],
+            [
+              70,
+              "BBE1818PI",
+              "FBWX1630",
+              "Live",
+              "$156.28",
+              17,
+              "+94.9%",
+              "2.1%",
+              333,
+              "97",
+              "4.38",
+              180,
+              131,
+              "2025-09-04"
+            ],
+            [
+              71,
+              "BALL3PC172120GY",
+              "FBWX1428",
+              "Live",
+              "$156.12",
+              6,
+              "-23.7%",
+              "3.62%",
+              138,
+              "99",
+              "4.17",
+              351,
+              77,
+              "2025-09-04"
+            ],
+            [
+              72,
+              "BWA2260BL",
+              "FBWX1490",
+              "Live",
+              "$153.87",
+              7,
+              "+83.2%",
+              "2.11%",
+              190,
+              "99",
+              "3.9",
+              803,
+              532,
+              "2025-09-03"
+            ],
+            [
+              73,
+              "BCL3PC172021BL",
+              "FBWX1420",
+              "Live",
+              "$153.54",
+              6,
+              "+198.1%",
+              "5.19%",
+              77,
+              "99",
+              "3.8",
+              30,
+              60,
+              "2025-09-04"
+            ],
+            [
+              74,
+              "BBE4PC17212421PU",
+              "FBWX1125",
+              "Live",
+              "$152.19",
+              2,
+              "—",
+              "0%",
+              3,
+              "97",
+              "4.56",
+              18,
+              105,
+              "2025-09-04"
+            ],
+            [
+              75,
+              "BMCC3PC172120BL",
+              "FBWX2082",
+              "Live",
+              "$151.40",
+              8,
+              "+58.3%",
+              "3.21%",
+              218,
+              "99",
+              "4.8",
+              10,
+              36,
+              "2025-09-05"
+            ],
+            [
+              76,
+              "BLUX2020CLI",
+              "FBWX1913",
+              "Live",
+              "$151.24",
+              20,
+              "+13.9%",
+              "4.9%",
+              143,
+              "98",
+              "4.04",
+              72,
+              110,
+              "2025-09-04"
+            ],
+            [
+              77,
+              "BWA4PC18202122BL",
+              "FBWX1454",
+              "Live",
+              "$150.09",
+              4,
+              "+223.8%",
+              "4.84%",
+              62,
+              "99",
+              "4.08",
+              324,
+              133,
+              "2025-09-04"
+            ],
+            [
+              78,
+              "BLUX5PCGRFT",
+              "FBWX1918",
+              "Live (some stores)",
+              "$149.02",
+              2,
+              "—",
+              "2.5%",
+              40,
+              "98",
+              "3.43",
+              7,
+              132,
+              "2025-09-04"
+            ],
+            [
+              79,
+              "BMELM2032TQ",
+              "FBWX2111",
+              "Live",
+              "$148.61",
+              13,
+              "-63.7%",
+              "0.37%",
+              800,
+              "99",
+              "3.82",
+              38,
+              360,
+              "2025-09-05"
+            ],
+            [
+              80,
+              "BWA2020GY",
+              "FBWX1491",
+              "Live",
+              "$147.23",
+              22,
+              "+0.8%",
+              "6.64%",
+              211,
+              "99",
+              "3.83",
+              637,
+              152,
+              "2025-09-04"
+            ],
+            [
+              81,
+              "BMO1724NA",
+              "FBWX1127",
+              "Live",
+              "$146.65",
+              16,
+              "-30%",
+              "2.11%",
+              474,
+              "100",
+              "4.43",
+              948,
+              452,
+              "2025-09-04"
+            ],
+            [
+              82,
+              "BMO1730SLI",
+              "FBWX1952",
+              "Live",
+              "$146.42",
+              13,
+              "+33.5%",
+              "0.82%",
+              611,
+              "98",
+              "4.42",
+              52,
+              117,
+              "2025-09-05"
+            ],
+            [
+              83,
+              "BWA30RWH",
+              "FBWX1438",
+              "Live",
+              "$146.19",
+              11,
+              "-55.1%",
+              "5.2%",
+              173,
+              "99",
+              "4.23",
+              218,
+              266,
+              "2025-09-04"
+            ],
+            [
+              84,
+              "BALL3PC172121PI",
+              "FBWX1427",
+              "Live",
+              "$143.75",
+              4,
+              "-32.4%",
+              "1.28%",
+              156,
+              "99",
+              "4.39",
+              191,
+              77,
+              "2025-09-04"
+            ],
+            [
+              85,
+              "BWA4PC18202122RE",
+              "FBWX1454",
+              "Live",
+              "$143.72",
+              3,
+              "-38.3%",
+              "1.9%",
+              105,
+              "99",
+              "4.08",
+              324,
+              133,
+              "2025-09-04"
+            ],
+            [
+              86,
+              "BWA4PC18202122WH",
+              "FBWX1454",
+              "Live",
+              "$143.72",
+              3,
+              "+6.4%",
+              "0%",
+              40,
+              "99",
+              "4.08",
+              324,
+              133,
+              "2025-09-04"
+            ],
+            [
+              87,
+              "BWA4PC17212022GY",
+              "DRBH6308",
+              "Live",
+              "$143.13",
+              3,
+              "+5.6%",
+              "2.13%",
+              94,
+              "100",
+              "3.81",
+              1117,
+              133,
+              "2025-09-04"
+            ],
+            [
+              88,
+              "BWA4PC17212022CH",
+              "DRBH6308",
+              "Live",
+              "$141.98",
+              3,
+              "-23.7%",
+              "0.65%",
+              154,
+              "100",
+              "3.81",
+              1117,
+              133,
+              "2025-09-04"
+            ],
+            [
+              89,
+              "BMO2440NA",
+              "FBWX1127",
+              "Live",
+              "$141.87",
+              7,
+              "+606.2%",
+              "4.82%",
+              83,
+              "100",
+              "4.43",
+              948,
+              452,
+              "2025-09-04"
+            ],
+            [
+              90,
+              "BWA4PC18202122LI",
+              "FBWX1454",
+              "Live",
+              "$140.82",
+              3,
+              "-69.1%",
+              "0.99%",
+              101,
+              "99",
+              "4.08",
+              324,
+              133,
+              "2025-09-04"
+            ],
+            [
+              91,
+              "BWA2134LI",
+              "FBWX1490",
+              "Live",
+              "$140.50",
+              12,
+              "-51.7%",
+              "0.46%",
+              1307,
+              "99",
+              "3.9",
+              803,
+              532,
+              "2025-09-03"
+            ],
+            [
+              92,
+              "BWA4PC17212022BLK",
+              "DRBH6308",
+              "Live",
+              "$140.39",
+              3,
+              "-40.3%",
+              "2.78%",
+              72,
+              "100",
+              "3.81",
+              1117,
+              133,
+              "2025-09-04"
+            ],
+            [
+              93,
+              "BWA4PC18202122LGY",
+              "FBWX1454",
+              "Live",
+              "$140.24",
+              3,
+              "—",
+              "1.32%",
+              76,
+              "99",
+              "4.08",
+              324,
+              133,
+              "2025-09-04"
+            ],
+            [
+              94,
+              "BMO2154GY",
+              "FBWX1127",
+              "Live",
+              "$137.88",
+              5,
+              "+83.7%",
+              "2.82%",
+              71,
+              "100",
+              "4.43",
+              948,
+              452,
+              "2025-09-04"
+            ],
+            [
+              95,
+              "BMELM1724TQ",
+              "FBWX2111",
+              "Live",
+              "$136.77",
+              15,
+              "-29.6%",
+              "0.6%",
+              499,
+              "99",
+              "3.82",
+              38,
+              360,
+              "2025-09-05"
+            ],
+            [
+              96,
+              "BWA5PCTC",
+              "DRBH6314",
+              "Live",
+              "$135.22",
+              4,
+              "+124.4%",
+              "3.53%",
+              85,
+              "99",
+              "4.13",
+              126,
+              152,
+              "2025-09-04"
+            ],
+            [
+              97,
+              "BMO2440LI",
+              "FBWX1127",
+              "Live",
+              "$134.41",
+              6,
+              "+30.2%",
+              "4.94%",
+              81,
+              "100",
+              "4.43",
+              948,
+              452,
+              "2025-09-04"
+            ],
+            [
+              98,
+              "BALL2440PI",
+              "RBSD7856",
+              "Live",
+              "$134.39",
+              9,
+              "-8.1%",
+              "2.3%",
+              87,
+              "100",
+              "4.09",
+              1314,
+              952,
+              "2025-09-04"
+            ],
+            [
+              99,
+              "BWA5PC1721201810TBL",
+              "FBWX1607",
+              "Live",
+              "$133.41",
+              3,
+              "—",
+              "7.32%",
+              41,
+              "99",
+              "3.97",
+              99,
+              187,
+              "2025-09-04"
+            ],
+            [
+              100,
+              "BWA3PC172120RB",
+              "WNPP2016",
+              "Live",
+              "$132.70",
+              5,
+              "+71.8%",
+              "2.86%",
+              70,
+              "99",
+              "3.84",
+              514,
+              152,
+              "2025-09-04"
+            ]
+          ]
+        }
+      ],
+      "source": "Business Performance (Aug 2026) · Product Management (last 90 days)",
+      "scoreNote": "70 − 12.4 (half of −24.7% revenue YoY) − 10 (traffic down > 30%) = 48."
+    },
+    "advertising": {
+      "score": 20,
+      "headline": "Ads have been dark for 28+ days — wallet is $0; a $1,500 top-up is pending",
+      "checks": {
+        "campaigns": {
+          "status": "fail",
+          "value": "3 of 18",
+          "note": "3 “Active” campaigns are not serving because the wallet is empty; 10 paused, 5 archived"
+        },
+        "scheduled": {
+          "status": "na",
+          "value": "0",
+          "note": "No scheduled campaigns"
+        },
+        "spend": {
+          "status": "fail",
+          "value": "$0.00",
+          "note": "Last 28 days; average daily spend $0.00"
+        },
+        "ad-sales": {
+          "status": "fail",
+          "value": "—",
+          "note": "No ad-attributed retail revenue in the last 28 days"
+        },
+        "roas": {
+          "status": "na",
+          "value": "—",
+          "note": "No spend to measure"
+        },
+        "acos": {
+          "status": "na",
+          "value": "—"
+        },
+        "ctr": {
+          "status": "na",
+          "value": "—"
+        },
+        "cpc": {
+          "status": "na",
+          "value": "—"
+        },
+        "budget": {
+          "status": "warn",
+          "value": "$135 vs $100 cap",
+          "note": "Active campaign daily caps ($70 + $45 + $20) exceed the $100 wallet daily cap"
+        },
+        "wallet": {
+          "status": "fail",
+          "value": "$0.00",
+          "note": "Prepaid invoice 1581388 for $1,500 pending since 14 Sep; Wayfair recommends $5,000; no auto-pay set up"
+        },
+        "coverage": {
+          "status": "fail",
+          "value": "0%",
+          "note": "“Top Priority SKUs” campaign exists but is not serving"
+        },
+        "recommendations": {
+          "status": "warn",
+          "value": "34",
+          "note": "1 new-product (“10× visibility”) + 33 high-potential (“rank higher”) campaign recommendations not launched"
+        }
+      },
+      "metrics": [
+        {
+          "label": "Wallet balance",
+          "value": "$0.00",
+          "good": false
+        },
+        {
+          "label": "Avg daily spend (L28)",
+          "value": "$0.00",
+          "good": false
+        },
+        {
+          "label": "Pending top-up",
+          "value": "$1,500"
+        },
+        {
+          "label": "Wallet daily cap",
+          "value": "$100"
+        },
+        {
+          "label": "Recommended funding",
+          "value": "$5,000"
+        },
+        {
+          "label": "Campaigns",
+          "value": "18 (3 active)"
+        }
+      ],
+      "findings": [
+        "No ad spend in the last 28 days — every campaign is starved because the wallet is $0.",
+        "A $1,500 prepaid invoice (1581388) was raised 14 Sep and is still pending; it is deducted from the next dropship voucher.",
+        "The traffic collapse (−60% YoY visits in August) lines up with ads going dark.",
+        "Active campaign daily caps total $135/day but the wallet cap is $100/day, so campaigns would be throttled even when funded.",
+        "34 Wayfair campaign recommendations (1 new-product, 33 high-potential) are waiting.",
+        "Wayfair moved to “Last Meaningful Touch” attribution on 8 Sep 2026 — ROAS before and after that date is not directly comparable."
+      ],
+      "actions": [
+        "Confirm invoice 1581388 clears, then set up auto-pay (trigger balance + amount) so ads never go dark again.",
+        "Raise the wallet daily cap to at least the sum of active campaign caps, or trim campaign caps.",
+        "Launch the 33 high-potential recommendations, and point “Top Priority SKUs” at the current top 100 SKUs.",
+        "Re-check ROAS two weeks after spend resumes."
+      ],
+      "tables": [
+        {
+          "title": "All campaigns",
+          "note": "Spend, ROAS and impressions show “—” because nothing served in the last 28 days.",
+          "columns": [
+            "Campaign",
+            "Status",
+            "Type",
+            "Start",
+            "End",
+            "Budget remaining",
+            "Daily cap",
+            "Daily cap remaining",
+            "ROAS (L28)",
+            "Spend (L28)"
+          ],
+          "rows": [
+            [
+              "HIGH_POTENTIAL_SKU - Wayfair (US) - 051926",
+              "Active",
+              "Sponsored Products",
+              "2026-05-19",
+              "No end date",
+              "No limit",
+              "$20.00",
+              "$20.00",
+              "—",
+              "—"
+            ],
+            [
+              "Impression & Element",
+              "Active",
+              "Sponsored Products",
+              "2026-03-26",
+              "No end date",
+              "No limit",
+              "$45.00",
+              "$45.00",
+              "—",
+              "—"
+            ],
+            [
+              "Top Priority SKUs",
+              "Active",
+              "Sponsored Products",
+              "2025-08-14",
+              "No end date",
+              "No limit",
+              "$70.00",
+              "$70.00",
+              "—",
+              "—"
+            ],
+            [
+              "HIGH_POTENTIAL_SKU - Wayfair (US) - 042026",
+              "Paused",
+              "Sponsored Products",
+              "2026-04-20",
+              "No end date",
+              "No limit",
+              "No cap",
+              "No cap",
+              "—",
+              "—"
+            ],
+            [
+              "COPY 2025/10/17",
+              "Paused",
+              "Sponsored Products",
+              "2026-02-09",
+              "No end date",
+              "No limit",
+              "$20.00",
+              "$20.00",
+              "—",
+              "—"
+            ],
+            [
+              "COPY 2025/10/17 - Canada",
+              "Paused",
+              "Sponsored Products",
+              "2026-02-09",
+              "No end date",
+              "No limit",
+              "$20.00",
+              "$20.00",
+              "—",
+              "—"
+            ],
+            [
+              "23_Sep",
+              "Paused",
+              "Sponsored Products",
+              "2024-09-23",
+              "No end date",
+              "No limit",
+              "$50.00",
+              "$50.00",
+              "—",
+              "—"
+            ],
+            [
+              "Sep 2024_Visibility",
+              "Paused",
+              "Sponsored Products",
+              "2024-09-16",
+              "No end date",
+              "No limit",
+              "$30.00",
+              "$30.00",
+              "—",
+              "—"
+            ],
+            [
+              "Sep 2024_Visibility_Rug Set",
+              "Paused",
+              "Sponsored Products",
+              "2024-09-16",
+              "No end date",
+              "No limit",
+              "$40.00",
+              "$40.00",
+              "—",
+              "—"
+            ],
+            [
+              "Top 25 SKUs",
+              "Paused",
+              "Sponsored Products",
+              "2024-07-30",
+              "No end date",
+              "No limit",
+              "$50.00",
+              "$50.00",
+              "—",
+              "—"
+            ],
+            [
+              "Glamour bath rugs",
+              "Paused",
+              "Sponsored Products",
+              "2024-06-25",
+              "No end date",
+              "No limit",
+              "$30.00",
+              "$30.00",
+              "—",
+              "—"
+            ],
+            [
+              "End of Season Sale",
+              "Paused",
+              "Sponsored Products",
+              "2024-06-18",
+              "No end date",
+              "No limit",
+              "$50.00",
+              "$50.00",
+              "—",
+              "—"
+            ],
+            [
+              "Top Selling collection",
+              "Paused",
+              "Sponsored Products",
+              "2022-12-17",
+              "No end date",
+              "No limit",
+              "$50.00",
+              "$50.00",
+              "—",
+              "—"
+            ],
+            [
+              "2025/12/12",
+              "Archived",
+              "Sponsored Products",
+              "2025-12-15",
+              "No end date",
+              "No limit",
+              "No cap",
+              "No cap",
+              "—",
+              "—"
+            ],
+            [
+              "2025/11/11",
+              "Archived",
+              "Sponsored Products",
+              "2025-11-12",
+              "No end date",
+              "No limit",
+              "$36.00",
+              "$36.00",
+              "—",
+              "—"
+            ],
+            [
+              "2025/10/17",
+              "Archived",
+              "Sponsored Products",
+              "2025-10-17",
+              "No end date",
+              "No limit",
+              "$36.00",
+              "$36.00",
+              "—",
+              "—"
+            ],
+            [
+              "2025/9/9",
+              "Archived",
+              "Sponsored Products",
+              "2025-09-09",
+              "No end date",
+              "No limit",
+              "No cap",
+              "No cap",
+              "—",
+              "—"
+            ],
+            [
+              "2025/9/9",
+              "Archived",
+              "Sponsored Products",
+              "2025-09-09",
+              "No end date",
+              "No limit",
+              "$18.00",
+              "$18.00",
+              "—",
+              "—"
+            ]
+          ]
+        },
+        {
+          "title": "Wallet activity (last 7 days)",
+          "columns": [
+            "Transaction",
+            "Amount",
+            "Initiator",
+            "Date",
+            "Status"
+          ],
+          "rows": [
+            [
+              "Prepaid Invoice (1581388)",
+              "$1,500.00",
+              "support@homeweavers.net",
+              "2026-09-14",
+              "Pending"
+            ]
+          ]
+        },
+        {
+          "title": "Wayfair campaign recommendations",
+          "columns": [
+            "Recommendation",
+            "Goal",
+            "Products",
+            "Status"
+          ],
+          "rows": [
+            [
+              "Boost visibility of newly listed products",
+              "10× visibility on Wayfair.com",
+              1,
+              "Not launched"
+            ],
+            [
+              "Increase sales velocity for high-potential products",
+              "Rank higher on Wayfair.com",
+              33,
+              "Not launched"
+            ]
+          ]
+        }
+      ],
+      "source": "Advertising → Campaigns (L28: 22 Aug – 19 Sep 2026) · Wallet",
+      "scoreNote": "No spend in the last 28 days → 30; − 10 (recommendations not reviewed) = 20."
+    },
+    "reviews": {
+      "score": 83,
+      "headline": "SKU-weighted rating 4.14★; 6 product families rate below 3.5★",
+      "checks": {
+        "avg-rating": {
+          "status": "pass",
+          "value": "4.14★",
+          "note": "Average across SKUs with reviews, weighted by review count"
+        },
+        "review-volume": {
+          "status": "pass",
+          "value": "49 / 50",
+          "note": "Top-50 sellers with ≥ 5 reviews; 1,888 SKUs (39%) have no reviews yet"
+        },
+        "low-rated": {
+          "status": "warn",
+          "value": "6 families",
+          "note": "60 SKUs across 6 listings rated < 3.5★ with ≥ 5 reviews"
+        },
+        "themes": {
+          "status": "na",
+          "note": "Review text not analysed yet"
+        },
+        "questions": {
+          "status": "na",
+          "note": "Not checked"
+        }
+      },
+      "metrics": [
+        {
+          "label": "Weighted rating",
+          "value": "4.14★"
+        },
+        {
+          "label": "SKUs 4.5★+",
+          "value": 712,
+          "good": true
+        },
+        {
+          "label": "SKUs < 3.5★",
+          "value": 164,
+          "good": false
+        },
+        {
+          "label": "SKUs without reviews",
+          "value": "1,888"
+        }
+      ],
+      "findings": [
+        "Most reviewed SKUs sit at 4.0–4.5★ (1,421 SKUs); 712 are 4.5★ or better.",
+        "The lowest-rated listings are the BFA… and BCL… families (2.8–3.45★).",
+        "Largest reviewed family BWA4PC17212022 (1,117 reviews) is the #1 seller but rates only 3.81★."
+      ],
+      "actions": [
+        "Read the reviews on the 6 low-rated families and fix the root cause (size, colour accuracy, quality), or delist them.",
+        "Investigate BWA4PC17212022 (top seller at 3.81★) — raising it above 4★ should lift conversion."
+      ],
+      "tables": [
+        {
+          "title": "Low-rated product families (< 3.5★, ≥ 5 reviews)",
+          "columns": [
+            "Listing",
+            "Example part #",
+            "Variants",
+            "Rating",
+            "Reviews",
+            "Revenue (90d)",
+            "Units (90d)",
+            "Missing attrs"
+          ],
+          "rows": [
+            [
+              "FBWX1168",
+              "BFA2PC2124PI",
+              9,
+              2.8,
+              5,
+              "$28.69",
+              1,
+              80
+            ],
+            [
+              "FBWX1171",
+              "BFA4PC17212021GY",
+              9,
+              3.29,
+              68,
+              "$197.14",
+              5,
+              80
+            ],
+            [
+              "FBWX1173",
+              "BFA5PCBL",
+              9,
+              3.3,
+              10,
+              "$135.27",
+              2,
+              71
+            ],
+            [
+              "FBWX1423",
+              "BCL5PC1721202124AQ",
+              6,
+              3.3,
+              10,
+              "$0.00",
+              0,
+              66
+            ],
+            [
+              "FBWX1918",
+              "BLUX5PCGRFT",
+              11,
+              3.43,
+              7,
+              "$337.53",
+              5,
+              132
+            ],
+            [
+              "FBWX1399",
+              "BCL2020LI",
+              16,
+              3.45,
+              84,
+              "$274.84",
+              34,
+              162
+            ]
+          ]
+        }
+      ],
+      "source": "Product Management (ratings & review counts per SKU)",
+      "scoreNote": "4.14 ÷ 5 × 100 = 83. Top-50 review coverage is fine, so no deduction."
+    }
+  }
+}
