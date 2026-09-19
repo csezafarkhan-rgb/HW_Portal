@@ -307,7 +307,8 @@ function checksTable(a, r, p) {
     const fix = p?.playbook?.fixes?.[key];
     const link = safeUrl(fix?.link || p?.playbook?.links?.[a.key]);
     // ⓘ next to the name: plain-language "what does this mean?" shown on hover / focus / tap
-    const info = fix?.explain ? `<span class="info" tabindex="0" role="button" aria-label="What does this mean?" data-info>i<span class="tip" role="tooltip"><strong>What does this mean?</strong>${escapeHtml(fix.explain)}</span></span>` : '';
+    // short line first; the full explanation opens with "More info"
+    const info = fix?.explain ? `<span class="info" tabindex="0" role="button" aria-label="What does this mean?" data-info>i<span class="tip" role="tooltip">${escapeHtml(fix.short || fix.explain)}${fix.short ? `<button type="button" class="more-info" aria-expanded="false">More info ▸</button><span class="tip-more" hidden>${escapeHtml(fix.explain)}</span>` : ''}</span></span>` : '';
     const head = `<span class="cmark ${st.cls}" title="${st.label}">${st.mark}</span>
     <span class="cmain"><span class="cname">${escapeHtml(c.name)}${info}</span>${res.note ? `<span class="cnote">${escapeHtml(res.note)}</span>` : ''}</span>
     <span class="cval">${res.value != null ? escapeHtml(String(res.value)) : '<span class="muted">—</span>'}</span>`;
@@ -388,6 +389,14 @@ const CHECK_SCRIPT = `<script>
     }
     el.addEventListener('mouseenter', place);
     el.addEventListener('focus', place);
+    var more = el.querySelector('.more-info');
+    if (more) more.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      var box = el.querySelector('.tip-more'), open = box.hidden;
+      box.hidden = !open; more.setAttribute('aria-expanded', String(open)); more.textContent = open ? 'Less ▴' : 'More info ▸';
+      el.classList.add('show'); place();   // pin it open while reading
+    });
+    el.querySelector('.tip').addEventListener('click', function (e) { e.stopPropagation(); if (e.target.closest('.tip') && !e.target.closest('.more-info')) e.preventDefault(); });
     function toggle(e) { e.preventDefault(); e.stopPropagation(); var on = !el.classList.contains('show'); document.querySelectorAll('[data-info].show').forEach(function (x) { x.classList.remove('show'); }); el.classList.toggle('show', on); if (on) place(); }
     el.addEventListener('click', toggle);
     el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') toggle(e); if (e.key === 'Escape') el.classList.remove('show'); });
@@ -593,8 +602,12 @@ div.check,.check>summary{display:grid;grid-template-columns:22px 1fr auto;gap:4p
 .fix{background:var(--bg);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:10px 14px;margin-bottom:10px}
 .info{position:relative;display:inline-grid;place-items:center;width:17px;height:17px;margin-left:6px;vertical-align:1px;border-radius:50%;border:1.5px solid var(--muted);color:var(--muted);font:italic 700 11px/1 Georgia,serif;cursor:help}
 .info:hover,.info:focus-visible,.info.show{border-color:var(--accent);color:var(--accent);outline:none}
-.tip{display:none;position:fixed;z-index:20;left:8px;top:0;width:min(340px,calc(100vw - 16px));padding:10px 12px;border-radius:10px;background:var(--fg);color:var(--bg);font:400 13.5px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;text-align:left;box-shadow:0 8px 24px rgb(0 0 0/.25);cursor:auto}
-.tip strong{display:block;margin-bottom:3px;font-size:13px}
+.tip{display:none;position:fixed;z-index:20;left:8px;top:0;width:max-content;max-width:min(300px,calc(100vw - 16px));padding:10px 12px;border-radius:10px;background:var(--fg);color:var(--bg);font:400 13.5px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;text-align:left;box-shadow:0 8px 24px rgb(0 0 0/.25);cursor:auto}
+.tip::after{content:"";position:absolute;left:0;right:0;top:-10px;bottom:-10px;z-index:-1}
+.more-info{all:unset;display:block;margin-top:6px;font-size:12.5px;font-weight:600;color:var(--bg);opacity:.75;cursor:pointer;text-decoration:underline}
+.more-info:hover,.more-info:focus-visible{opacity:1}
+.tip-more{display:block;margin-top:6px;padding-top:6px;border-top:1px solid rgb(127 127 127/.35);opacity:.9}
+.tip-more[hidden]{display:none}
 .info:hover .tip,.info:focus-visible .tip,.info.show .tip{display:block}
 .fix ol{margin:6px 0 0;padding-left:20px}
 .fix li{margin:3px 0}

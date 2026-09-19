@@ -13,7 +13,8 @@
   },
   "fixes": {
     "portal-health.scorecard": {
-      "explain": "Wayfair gives every supplier a report card on shipping. Right now one number on it is below Wayfair’s target — your induction fill rate is 87.2%. Wayfair has raised an alert for this, and if it stays low for long, your products can get shown lower in search.",
+      "short": "Wayfair’s shipping report card. 1 score below target: 13 of 100 parcels get FedEx’s first scan late.",
+      "explain": "Wayfair gives every supplier a report card on shipping. One number is below target: induction fill rate is 87.2%. Induction = FedEx’s first scan of your parcel; Wayfair wants it on or before the ship-by date. 13 of every 100 parcels miss it, so they count as late — even if you packed on time. If it stays low, your products can be shown lower in search.",
       "solution": [
         "Open the Fulfillment Performance dashboard and read the Low Induction Fill Rate alert.",
         "Work through the Order & Fulfillment → fill-rate fix below; the alert clears once the 4-week rate is back above target."
@@ -22,6 +23,7 @@
       "linkLabel": "Open fulfillment dashboard"
     },
     "portal-health.open-tickets": {
+      "short": "Open support cases. 2 are Wayfair’s to close — you already replied.",
       "explain": "These are support tickets that are still open. Two of them (QAPH-3340280 and QAPH-3331799) were opened by Wayfair to ask about a rug’s size and shape. Your team already answered in August 2025 and asked Wayfair to close them on 13 March 2026. The “Close Ticket” button is greyed out for you because Wayfair opened these tickets — only Wayfair can close them. Nothing is pending from your side, so we are not counting them against your score.",
       "solution": [
         "Open each ticket → Add Comment/Attachment and post: “The customer question was answered on 4 Aug 2025 (96 x 120 in, rectangular, hexagon pattern). Nothing is pending from our side — please close QAPH-3340280 and QAPH-3331799.”",
@@ -32,6 +34,7 @@
       "linkLabel": "Open supplier inbox"
     },
     "portal-health.alerts": {
+      "short": "2 warnings: 1 late order, low fill rate.",
       "explain": "Wayfair is showing 2 warnings on your account: one order is late, and your induction fill rate is low. Both affect your shipping score.",
       "solution": [
         "Resolve the overdue order CS680345833 (see Order & Fulfillment).",
@@ -41,6 +44,7 @@
       "linkLabel": "Open orders"
     },
     "portal-health.documents": {
+      "short": "Insurance, tax & compliance papers. Not visible here — check manually.",
       "explain": "Wayfair needs valid insurance, tax (W-9) and product compliance documents on file. We cannot see these from Partner Home, so please check them once manually.",
       "solution": [
         "Check insurance certificate, W-9 and product compliance documents in Partner Home → Account settings / Finance.",
@@ -50,6 +54,7 @@
       "linkLabel": "Open finance"
     },
     "listing-health.suppressed": {
+      "short": "Not Live = customers can’t see or buy it. 373 SKUs affected.",
       "explain": "“Not Live” means the product is listed but customers cannot see or buy it on Wayfair. 373 of your SKUs are fully or partly not live. Some of them were selling well before — for example the Bruss Luxury family made $1,422 in the last 90 days and is now offline.",
       "solution": [
         "Open the list here — it is sorted by revenue, so the top rows were selling before they went offline.",
@@ -62,6 +67,7 @@
       "linkLabel": "Open Not Live products"
     },
     "listing-health.attributes": {
+      "short": "Attributes = product details used in filters. ~187 missing per SKU.",
       "explain": "Attributes are the product details Wayfair asks for — size, material, colour, pile height, backing, care and so on. When a customer uses filters like “cotton” or “20x30”, only products with those details filled in are shown. Your SKUs are missing about 187 details each on average, so many customers are simply not seeing them.",
       "solution": [
         "Download this list (sorted by revenue) and take the top 100 rows.",
@@ -74,6 +80,7 @@
       "linkLabel": "Open Update from File"
     },
     "listing-health.images": {
+      "short": "Wayfair didn’t share image counts. Aim for 5+ photos per product.",
       "explain": "Wayfair did not share the image count for your products, so we could not check this. Good listings usually have at least 5 photos.",
       "solution": [
         "Open Media Management and filter to your top sellers.",
@@ -83,6 +90,7 @@
       "linkLabel": "Open media management"
     },
     "listing-health.titles": {
+      "short": "Not scored yet. Titles should show material, size and key feature.",
       "explain": "We have not scored titles and descriptions yet. Clear titles with material, size and key feature help customers find and trust the product.",
       "solution": [
         "For top sellers, check titles include material, size and key feature (e.g. “100% Cotton Non-Slip Bath Mat 17x24”).",
@@ -92,6 +100,7 @@
       "linkLabel": "Open products"
     },
     "pricing-health.competitiveness": {
+      "short": "Wayfair suggests better prices on 11 products (+99 for sale events).",
       "explain": "Wayfair compares your price with similar products. It has marked 11 products where a small cost change would make them more competitive, and 99+ products where it suggests a special price for big sale events. More competitive price = better ranking in search.",
       "solution": [
         "Pricing Home → Recommendations → Cost Changes: review the 11 products.",
@@ -102,6 +111,7 @@
       "linkLabel": "Open pricing recommendations"
     },
     "pricing-health.map": {
+      "short": "MAP = lowest price sellers may show. Set on only 7% of live SKUs.",
       "explain": "MAP (Minimum Advertised Price) is the lowest price you allow sellers to show. Only 7% of your live SKUs have MAP set. Without it, your product can be shown at very different prices on different sites, which can confuse customers and hurt your brand.",
       "solution": [
         "Decide a MAP for your top 100 sellers (typically the price you sell at on your own site).",
@@ -112,6 +122,7 @@
       "linkLabel": "Open Pricing Home"
     },
     "pricing-health.pending-changes": {
+      "short": "Cost changes waiting for Wayfair approval. Not checked yet.",
       "explain": "Not checked yet — this is about cost changes you have sent to Wayfair that are still waiting for approval.",
       "solution": [
         "Pricing Home → Cost Changes: check for submitted changes still waiting on Wayfair and chase any older than 14 days."
@@ -120,6 +131,7 @@
       "linkLabel": "Open cost changes"
     },
     "promotions.invitations": {
+      "short": "4 sale events open, nothing submitted. Deadlines 25 Sep & 2 Oct.",
       "explain": "Wayfair has invited you to 4 upcoming sale events and you have not submitted any products yet. Two close on 25 September and two on 2 October — including Way Day, which is Wayfair’s biggest sale of the year.",
       "solution": [
         "WFNA 5 Days of Deals and WFNA 48HR Sale close 25 Sep; NA Way Day and NA 48HR Sale close 2 Oct.",
@@ -132,6 +144,7 @@
       "linkLabel": "Open promotions"
     },
     "promotions.performance": {
+      "short": "Wayfair shows no sales numbers for your promotions.",
       "explain": "Wayfair is not showing any numbers on how much extra your promotions sold. So right now we cannot tell which sales really worked and which only reduced your margin.",
       "solution": [
         "Ask your Wayfair account manager for promotion performance by event (lift, units, revenue).",
@@ -141,6 +154,7 @@
       "linkLabel": "Open business performance"
     },
     "promotions.sku-coverage": {
+      "short": "Every live product is on discount — at least 10% till 19 Nov.",
       "explain": "Every single live product of yours is on discount today, and will stay on at least 10% discount till 19 November. When a product is always on sale, customers stop seeing it as a “deal”, and you lose margin on every order.",
       "solution": [
         "Every live SKU is discounted today. Pick ~200 steady sellers and leave them out of the next extended-discount event.",
@@ -152,6 +166,7 @@
       "linkLabel": "Open promotions"
     },
     "promotions.discount-depth": {
+      "short": "Discounts run 10–23% (business buyers up to 25%).",
       "explain": "This is how big your discounts are: 10% to 23% for normal customers and up to 25% for business buyers. Some products have 2 discounts running at the same time.",
       "solution": [
         "Keep deep discounts (20%+) for major events only.",
@@ -161,6 +176,7 @@
       "linkLabel": "Open promotions"
     },
     "promotions.ending-soon": {
+      "short": "Fall Sale ends 22 Sep. Next sale starts 23 Sep — no action needed.",
       "explain": "The NA Fall Sale ends on 22 September. No action needed — your next sale starts on 23 September.",
       "solution": [
         "NA Fall Sale ends 22 Sep. Nothing to do unless you want to extend specific SKUs — upcoming events already cover the catalog from 23 Sep."
@@ -169,6 +185,7 @@
       "linkLabel": "Open promotions"
     },
     "inventory-health.oos-count": {
+      "short": "1,080 products at zero stock. 155 were selling (~$3,450/month).",
       "explain": "1,080 products show zero stock, so Wayfair has stopped selling them. Out of these, 155 were actually selling — they made $10,352 in the last 90 days. That is roughly $3,450 per month of orders you are missing.",
       "solution": [
         "Open the list — sorted by units sold in the last 90 days.",
@@ -181,6 +198,7 @@
       "linkLabel": "Open inventory"
     },
     "inventory-health.top-seller-oos": {
+      "short": "12 of your top 50 sellers are out of stock.",
       "explain": "12 of your 50 best-selling products are out of stock right now, including your #3 and #5 sellers. These are the most important ones to restock first.",
       "solution": [
         "These are top-50 sellers with zero available — restock them before anything else.",
@@ -191,6 +209,7 @@
       "linkLabel": "Open inventory"
     },
     "inventory-health.in-stock-rate": {
+      "short": "Only 77% of active products have stock.",
       "explain": "Out of 4,719 active products, only 77% have stock right now. Almost 1 in 4 products cannot be bought today.",
       "solution": [
         "Restock sellers (see Out-of-stock SKUs) and discontinue dead out-of-stock SKUs — both raise the in-stock rate."
@@ -199,6 +218,7 @@
       "linkLabel": "Open inventory"
     },
     "inventory-health.feed-freshness": {
+      "short": "Feed is current, but 203 SKUs are flagged “stale” by Wayfair.",
       "explain": "Your stock numbers were updated within the last hour, which is good. But Wayfair has marked 203 SKUs as “stale” — their stock count has not been updated properly for some time.",
       "solution": [
         "Filter Inventory → stale inventory and re-submit quantities for those SKUs.",
@@ -208,6 +228,7 @@
       "linkLabel": "Open inventory"
     },
     "fulfillment-health.overdue": {
+      "short": "1 order handed to FedEx on 14 Sep, never scanned.",
       "explain": "One order (CS680345833) was handed to FedEx on 14 September, but FedEx has not scanned it yet. For Wayfair it looks like the order has not shipped, so it is counted as late.",
       "solution": [
         "Order CS680345833 (LS35TA) was picked up 14 Sep but FedEx never scanned it.",
@@ -218,7 +239,8 @@
       "linkLabel": "Open orders"
     },
     "fulfillment-health.fill-rate": {
-      "explain": "Induction fill rate means: out of all your parcels, how many were scanned by the courier (FedEx) on the day they were supposed to ship. Yours is 87.2% — so about 13 out of every 100 parcels get their first scan late. Even if you packed them on time, Wayfair counts these as late shipments.",
+      "short": "Induction = FedEx’s first scan of your parcel. Wayfair wants it by the ship-by date. Yours: 87 of 100 on time, 13 late.",
+      "explain": "“Induction” is the first time FedEx scans your parcel — normally when they pick it up from your warehouse. Wayfair only trusts that scan, not your packing time. Example: order says ship by Monday → you pack it Monday → FedEx picks it up Monday evening but scans it only on Tuesday at their hub → Wayfair counts it as LATE. Your rate is 87.2%, so 13 out of every 100 parcels are counted late this way.",
       "solution": [
         "Induction fill rate = parcels scanned by the carrier on the expected day. It is 87.2% (alert raised).",
         "Ask FedEx to scan every parcel at pickup (not later at the hub).",
@@ -237,6 +259,7 @@
       "linkLabel": "Open orders"
     },
     "returns-health.return-rate": {
+      "short": "Change-of-mind returns: 7.8% — about 8 in 100 orders.",
       "explain": "7.83% of orders are being returned because the customer changed their mind (not because of damage). That is about 8 out of 100 orders. This usually happens when the product looks different from the photos, or the size or colour is not what the customer expected.",
       "solution": [
         "Incidents & Resolutions → Customer Incidents and Returns → Show more details: find the class below its average.",
@@ -247,6 +270,7 @@
       "linkLabel": "Open incidents & resolutions"
     },
     "returns-health.pending-rmas": {
+      "short": "Return requests waiting for your approval. Not checked yet.",
       "explain": "Not checked yet — RMAs are return requests waiting for your approval.",
       "solution": [
         "Open Pending RMAs and approve or dispute each one within the deadline."
@@ -255,6 +279,7 @@
       "linkLabel": "Open pending RMAs"
     },
     "sales-performance.revenue": {
+      "short": "August sales $21,696 — down 25% from last year.",
       "explain": "Your Wayfair sales in August 2026 were $21,696, which is about 25% less than August last year.",
       "solution": [
         "Revenue is down 24.7% YoY. The biggest levers, in order: restart ads, restock sellers, relist Not Live families, submit top sellers to October events.",
@@ -264,6 +289,7 @@
       "linkLabel": "Open business performance"
     },
     "sales-performance.traffic": {
+      "short": "Product visitors down 60% vs last year.",
       "explain": "Only 9,085 people visited your products in August, compared to about 22,700 last year — a drop of 60%. Fewer visitors means fewer sales, even if the products are good. This happened around the same time your ads stopped running.",
       "solution": [
         "Visits are down 60% YoY — mostly lost sponsored visibility. Fund the ad wallet and relaunch campaigns on the top 100 SKUs.",
@@ -273,6 +299,7 @@
       "linkLabel": "Open advertising"
     },
     "sales-performance.units": {
+      "short": "1,362 pieces sold in August — down 5%.",
       "explain": "You sold 1,362 pieces in August — about 5% fewer than last year. Pieces fell much less than sales value because prices were lower due to discounts.",
       "solution": [
         "Units are down 5.4% YoY. Restock the out-of-stock sellers and fix high-traffic/low-conversion listings."
@@ -281,6 +308,7 @@
       "linkLabel": "Open inventory"
     },
     "sales-performance.orders": {
+      "short": "1,223 orders in August — down 8%.",
       "explain": "You got 1,223 orders in August — about 8% fewer than last year.",
       "solution": [
         "Orders track units — same fixes: restock sellers, restart ads, relist Not Live families."
@@ -299,6 +327,7 @@
       "linkLabel": "Open products"
     },
     "sales-performance.category-mix": {
+      "short": "97% of sales come from Bath Rugs & Mats alone.",
       "explain": "97% of your Wayfair sales come from one category — Bath Rugs & Mats. If anything goes wrong in that one category, your whole Wayfair business is affected.",
       "solution": [
         "97% of revenue is Bath Rugs & Mats. Bath Towels grew +361% — give towels their own ad campaign and submit them to Way Day.",
@@ -308,6 +337,7 @@
       "linkLabel": "Open advertising"
     },
     "sales-performance.zero-sellers": {
+      "short": "3,325 live products (72%) sold nothing in 90 days.",
       "explain": "3,325 of your live products did not sell even one piece in the last 90 days. That is 72% of the catalog. Many of them are also out of stock or getting very few visitors.",
       "solution": [
         "Sorted by visits. SKUs with visits but no sales: fix price or content.",
@@ -318,6 +348,7 @@
       "linkLabel": "Open inventory"
     },
     "advertising.campaigns": {
+      "short": "3 campaigns say “Active” but aren’t running — wallet is empty.",
       "explain": "You have 3 ad campaigns marked “Active”, but none of them is actually running because your ad wallet has no money.",
       "solution": [
         "Campaigns are “Active” but not serving because the wallet is $0 — fund the wallet first (see Wallet).",
@@ -327,6 +358,7 @@
       "linkLabel": "Open campaigns"
     },
     "advertising.spend": {
+      "short": "$0 spent on ads in 28 days.",
       "explain": "You have spent $0 on Wayfair ads in the last 28 days. So your products are not getting any paid visibility at the top of search results.",
       "solution": [
         "No spend for 28+ days. Fund the wallet and turn on auto-pay (see Wallet)."
@@ -335,6 +367,7 @@
       "linkLabel": "Open ad wallet"
     },
     "advertising.ad-sales": {
+      "short": "No sales from ads — nothing ran.",
       "explain": "Since no ads ran, there are no sales from ads in the last 28 days.",
       "solution": [
         "Ad sales return as soon as campaigns serve again. Re-check after 2 weeks of spend."
@@ -343,6 +376,7 @@
       "linkLabel": "Open campaigns"
     },
     "advertising.wallet": {
+      "short": "Prepaid ad balance is $0. $1,500 top-up pending since 14 Sep.",
       "explain": "The ad wallet is the prepaid balance Wayfair uses to run your ads. It is at $0 right now, so all ads have stopped. A $1,500 top-up was raised on 14 September and is still pending. There is no auto top-up set, so this can happen again.",
       "solution": [
         "Confirm prepaid invoice 1581388 ($1,500, 14 Sep) has cleared.",
@@ -354,6 +388,7 @@
       "linkLabel": "Open ad wallet"
     },
     "advertising.budget": {
+      "short": "Campaigns want $135/day; wallet allows only $100/day.",
       "explain": "Your 3 active campaigns together are allowed to spend $135 a day, but your wallet only allows $100 a day. So even after you add money, some campaigns will be stopped early every day.",
       "solution": [
         "Active campaign caps total $135/day but the wallet cap is $100/day.",
@@ -363,6 +398,7 @@
       "linkLabel": "Open ad wallet"
     },
     "advertising.coverage": {
+      "short": "None of your top 100 sellers are getting ads.",
       "explain": "None of your top 100 best sellers are getting ads right now. These are exactly the products where ads usually give the best return.",
       "solution": [
         "Edit “Top Priority SKUs” and replace its products with this list (top 100 sellers).",
@@ -372,6 +408,7 @@
       "linkLabel": "Open campaigns"
     },
     "advertising.recommendations": {
+      "short": "Wayfair suggested ad campaigns for 34 products — not launched.",
       "explain": "Wayfair has suggested 2 ready-made ad campaigns for 34 of your products (1 new product and 33 “high potential” products). They are waiting for you to launch them.",
       "solution": [
         "Campaigns → Recommendations → “Increase sales velocity for high potential products” → Review and Launch (33 products).",
@@ -381,6 +418,7 @@
       "linkLabel": "Open recommendations"
     },
     "reviews.low-rated": {
+      "short": "6 product families rated below 3.5★.",
       "explain": "6 product families have an average rating below 3.5 stars. Low ratings make customers hesitate and also push the product down in search.",
       "solution": [
         "Open the list (lowest rating first) and read each family’s latest 1–2★ reviews.",
@@ -399,6 +437,7 @@
       "linkLabel": "Open products"
     },
     "reviews.themes": {
+      "short": "Most common review complaints. Not checked yet.",
       "explain": "Not checked yet — this will show the most common complaints in customer reviews.",
       "solution": [
         "Export reviews for the top 20 listings and tag the recurring complaints — this analyzer will score them once review text is collected."
@@ -407,18 +446,23 @@
       "linkLabel": "Open consumer insights"
     },
     "advertising.roas": {
+      "short": "ROAS = ad sales ÷ ad spend. Shows once ads run.",
       "explain": "ROAS (Return on Ad Spend) = sales from ads ÷ money spent on ads. For example, a ROAS of 4 means $4 of sales for every $1 spent. We cannot calculate it right now because nothing was spent."
     },
     "advertising.acos": {
+      "short": "ACoS = ad spend ÷ ad sales (%). Lower is better.",
       "explain": "ACoS (Ad Cost of Sales) = ad spend ÷ sales from ads, shown as a %. Lower is better. It will show once ads start running again."
     },
     "advertising.ctr": {
+      "short": "CTR = clicks ÷ people who saw the ad.",
       "explain": "CTR (Click-Through Rate) = how many people clicked your ad out of everyone who saw it. It will show once ads start running again."
     },
     "advertising.cpc": {
+      "short": "CPC = what you pay per ad click.",
       "explain": "CPC (Cost Per Click) = how much you pay Wayfair each time someone clicks your ad. It will show once ads start running again."
     },
     "reviews.questions": {
+      "short": "Unanswered customer questions. Not checked yet.",
       "explain": "Not checked yet — customer questions on product pages that nobody has answered."
     }
   }
