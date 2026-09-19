@@ -80,14 +80,55 @@ function readBody(req) {
   });
 }
 
+// Theme: 'light' | 'dark' | 'system' (follows the OS), stored in a cookie so the server renders it without a flash.
+const THEME_COOKIE = 'hwp_theme';
+function getTheme(req) {
+  const t = getCookie(req, THEME_COOKIE);
+  return t === 'light' || t === 'dark' ? t : 'system';
+}
+
+const LIGHT = '--bg:#fafaf9;--fg:#1c1917;--muted:#78716c;--line:#e7e5e4;--accent:#7b189f;--accent-fg:#fff;--card:#fff;--err:#b91c1c;--good:#15803d;--warn:#b45309;--bad:#b91c1c;color-scheme:light';
+const DARK = '--bg:#1c1917;--fg:#f5f5f4;--muted:#a8a29e;--line:#44403c;--accent:#d8a4ef;--accent-fg:#1c1917;--card:#292524;--err:#fca5a5;--good:#4ade80;--warn:#fbbf24;--bad:#f87171;color-scheme:dark';
+const THEME_CSS = `:root{${LIGHT}}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){${DARK}}}
+:root[data-theme=dark]{${DARK}}
+.theme{display:inline-flex;gap:2px;padding:2px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.theme button{all:unset;display:grid;place-items:center;width:28px;height:26px;border-radius:6px;color:var(--muted);cursor:pointer}
+.theme button:hover{color:var(--fg)}
+.theme button[aria-pressed=true]{background:var(--accent);color:var(--accent-fg)}
+.theme button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.theme svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}`;
+
+const THEME_TOGGLE = `<div class="theme" role="group" aria-label="Colour theme">
+<button type="button" data-set-theme="light" aria-label="Light theme" title="Light"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+<button type="button" data-set-theme="system" aria-label="Match device theme" title="Auto (match device)"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button>
+<button type="button" data-set-theme="dark" aria-label="Dark theme" title="Dark"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></button>
+</div>
+<script>
+(function () {
+  var cur = (document.cookie.match(/(?:^|; )${THEME_COOKIE}=(\\w+)/) || [])[1] || 'system';
+  var btns = document.querySelectorAll('[data-set-theme]');
+  btns.forEach(function (b) {
+    b.setAttribute('aria-pressed', String(b.dataset.setTheme === cur));
+    b.addEventListener('click', function () {
+      var t = b.dataset.setTheme;
+      document.cookie = '${THEME_COOKIE}=' + t + '; Path=/; Max-Age=31536000; SameSite=Lax';
+      if (t === 'system') document.documentElement.removeAttribute('data-theme');
+      else document.documentElement.setAttribute('data-theme', t);
+      btns.forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+    });
+  });
+})();
+</script>`;
+
 function loginPage(next, error) {
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sign in · HW Portals</title>
 <style>
-:root{--bg:#fafaf9;--fg:#1c1917;--muted:#78716c;--line:#e7e5e4;--accent:#7b189f;--accent-fg:#fff;--card:#fff;--err:#b91c1c}
-@media (prefers-color-scheme:dark){:root{--bg:#1c1917;--fg:#f5f5f4;--muted:#a8a29e;--line:#44403c;--accent:#d8a4ef;--accent-fg:#1c1917;--card:#292524;--err:#fca5a5}}
+${THEME_CSS}
+.corner{position:fixed;top:12px;right:12px}
 *{box-sizing:border-box}
 body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;padding:16px}
 form{width:100%;max-width:360px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:28px 24px}
@@ -96,10 +137,11 @@ p{margin:0 0 20px;color:var(--muted);font-size:14px}
 label{display:block;font-size:14px;font-weight:600;margin:14px 0 6px}
 input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);font:inherit}
 input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
-button{width:100%;margin-top:22px;padding:11px;border:0;border-radius:8px;background:var(--accent);color:var(--accent-fg);font:inherit;font-weight:600;cursor:pointer}
+form button{width:100%;margin-top:22px;padding:11px;border:0;border-radius:8px;background:var(--accent);color:var(--accent-fg);font:inherit;font-weight:600;cursor:pointer}
 .err{color:var(--err);font-size:14px;margin:12px 0 0}
 </style></head>
 <body>
+<div class="corner">${THEME_TOGGLE}</div>
 <form method="post" action="/login">
   <h1>HW Portals</h1>
   <p>HomeWeavers portal analysis. Sign in to continue.</p>
@@ -344,14 +386,14 @@ function page(title, body) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(title)}</title>
 <style>
-:root{--bg:#fafaf9;--fg:#1c1917;--muted:#78716c;--line:#e7e5e4;--accent:#7b189f;--card:#fff;--good:#15803d;--warn:#b45309;--bad:#b91c1c}
-@media (prefers-color-scheme:dark){:root{--bg:#1c1917;--fg:#f5f5f4;--muted:#a8a29e;--line:#44403c;--accent:#d8a4ef;--card:#292524;--good:#4ade80;--warn:#fbbf24;--bad:#f87171}}
+${THEME_CSS}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,Segoe UI,sans-serif}
 header{border-bottom:1px solid var(--line);padding:10px 16px;display:flex;justify-content:space-between;align-items:center}
 header form{margin:0}
-header button{background:none;border:1px solid var(--line);border-radius:6px;color:var(--muted);font:inherit;font-size:14px;padding:4px 10px;cursor:pointer}
-header button:hover{color:var(--fg);border-color:var(--accent)}
+.hright{display:flex;align-items:center;gap:10px}
+header form button{background:none;border:1px solid var(--line);border-radius:6px;color:var(--muted);font:inherit;font-size:14px;padding:4px 10px;cursor:pointer}
+header form button:hover{color:var(--fg);border-color:var(--accent)}
 header a{color:var(--fg);text-decoration:none;font-weight:600}
 main{max-width:960px;margin:0 auto;padding:24px 16px 64px}
 a{color:var(--accent)}
@@ -439,10 +481,11 @@ table.checks td:first-child{width:32px;padding-left:0}
 .hero .mono{width:52px;height:52px;font-size:18px}
 @media (prefers-reduced-motion:reduce){.portal{transition:none}.portal:hover{transform:none}}
 </style></head>
-<body><header><a href="/">HW Portals</a><form method="post" action="/logout"><button type="submit">Sign out</button></form></header><main>${body}</main></body></html>`;
+<body><header><a href="/">HW Portals</a><div class="hright">${THEME_TOGGLE}<form method="post" action="/logout"><button type="submit">Sign out</button></form></div></header><main>${body}</main></body></html>`;
 }
 
 function send(res, status, html) {
+  if (res.theme && res.theme !== 'system') html = html.replace('<html lang="en">', `<html lang="en" data-theme="${res.theme}">`);
   res.writeHead(status, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
   res.end(html);
 }
@@ -454,6 +497,7 @@ function redirect(res, location) {
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost');
+  res.theme = getTheme(req);
 
   if (url.pathname === '/healthz') {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
