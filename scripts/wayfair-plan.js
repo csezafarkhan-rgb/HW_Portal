@@ -42,6 +42,26 @@ Object.assign(a.analyzers['inventory-health'], {
   scoreNote: 'In-stock rate 77.1 − 10 (top-50 sellers out of stock) = 67. Feed updated within 24h, so no feed deduction.',
 });
 
+// ── Portal Health: the two March tickets were opened by Wayfair, so the supplier can't close them ──
+// (Close Ticket is disabled; Home Weavers asked Wayfair to close them on 13 Mar 2026.) Not counted against the score.
+const ph = a.analyzers['portal-health'];
+Object.assign(ph, {
+  score: 80,
+  headline: 'Account in good standing; a fill-rate alert is open, and 2 old tickets are waiting on Wayfair to close',
+  scoreNote: '100 − 20 (induction fill rate below Wayfair threshold, alert raised) = 80. The 2 March tickets are not deducted: they were opened by Wayfair, answered by Home Weavers, and only Wayfair can close them.',
+});
+ph.checks['open-tickets'] = { status: 'warn', value: '3 open', note: '2 Wayfair-opened “Supplier Outreach Request” tickets — you asked Wayfair to close them on 13 Mar 2026; they are still open' };
+ph.metrics = ph.metrics.map(m => (m.label === 'Oldest open ticket' ? { label: 'Waiting on Wayfair to close', value: 2 } : m));
+ph.findings = [
+  'No compliance, pricing or review violations — the account is in good standing.',
+  'QAPH-3340280 and QAPH-3331799 were opened by Wayfair (customer question about a rug’s size/shape, Aug 2025). Home Weavers answered on 4 Aug 2025 and asked Wayfair to close them on 13 Mar 2026. The Close Ticket button is disabled for suppliers on Wayfair-opened tickets.',
+  'Finance ticket DESK-673236 (WayUp inquiry) was updated 18 Sep 2026.',
+];
+ph.actions = [
+  'Follow up with Wayfair to close QAPH-3340280 and QAPH-3331799 (see the “How to fix” steps).',
+  'Fix the induction fill-rate alert (see Order & Fulfillment).',
+];
+
 // ── Ranked growth plan ──
 a.plan = [
   {

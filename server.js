@@ -306,13 +306,15 @@ function checksTable(a, r, p) {
     const list = p?.details?.[key];
     const fix = p?.playbook?.fixes?.[key];
     const link = safeUrl(fix?.link || p?.playbook?.links?.[a.key]);
+    // ⓘ next to the name: plain-language "what does this mean?" shown on hover / focus / tap
+    const info = fix?.explain ? `<span class="info" tabindex="0" role="button" aria-label="What does this mean?" data-info>i<span class="tip" role="tooltip"><strong>What does this mean?</strong>${escapeHtml(fix.explain)}</span></span>` : '';
     const head = `<span class="cmark ${st.cls}" title="${st.label}">${st.mark}</span>
-    <span class="cmain">${escapeHtml(c.name)}${res.note ? `<span class="cnote">${escapeHtml(res.note)}</span>` : ''}</span>
+    <span class="cmain"><span class="cname">${escapeHtml(c.name)}${info}</span>${res.note ? `<span class="cnote">${escapeHtml(res.note)}</span>` : ''}</span>
     <span class="cval">${res.value != null ? escapeHtml(String(res.value)) : '<span class="muted">—</span>'}</span>`;
-    if (!list && !fix) return `<div class="check">${head}</div>`;
+    if (!list && !fix?.solution?.length) return `<div class="check">${head}</div>`;
     const chips = [
       list ? `<span class="chip">${list.count.toLocaleString('en-US')} ${list.count === 1 ? 'row' : 'rows'}</span>` : '',
-      fix && res.status && res.status !== 'pass' ? '<span class="chip fixchip">How to fix</span>' : '',
+      fix?.solution?.length && res.status && res.status !== 'pass' ? '<span class="chip fixchip">How to fix</span>' : '',
     ].join('');
     const solution = fix?.solution?.length ? `<div class="fix"><strong>${res.status === 'pass' ? 'Keep it healthy' : 'Best solution'}</strong><ol>${fix.solution.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ol>${fix.impact ? `<p class="impact">Expected impact: ${escapeHtml(fix.impact)}</p>` : ''}</div>` : '';
     const actions = link ? `<a class="btn" href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(fix?.linkLabel || 'Fix in portal')} ↗</a>` : '';
@@ -375,6 +377,22 @@ const CHECK_SCRIPT = `<script>
       render(box, d, state);
     }).catch(function () { box.innerHTML = '<p class="muted">Couldn’t load this list.</p>'; det.dataset.loaded = ''; });
   }
+  // ⓘ inside a clickable row: tapping/clicking shows the tip instead of opening the row
+  document.querySelectorAll('[data-info]').forEach(function (el) {
+    // keep the tip inside the screen: below the icon (above if no room), clamped left/right
+    function place() {
+      var tip = el.querySelector('.tip'), r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+      var left = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), innerWidth - w - 8);
+      var top = r.bottom + 8 + h > innerHeight && r.top - 8 - h > 0 ? r.top - 8 - h : r.bottom + 8;
+      tip.style.left = left + 'px'; tip.style.top = top + 'px';
+    }
+    el.addEventListener('mouseenter', place);
+    el.addEventListener('focus', place);
+    function toggle(e) { e.preventDefault(); e.stopPropagation(); var on = !el.classList.contains('show'); document.querySelectorAll('[data-info].show').forEach(function (x) { x.classList.remove('show'); }); el.classList.toggle('show', on); if (on) place(); }
+    el.addEventListener('click', toggle);
+    el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') toggle(e); if (e.key === 'Escape') el.classList.remove('show'); });
+  });
+  document.addEventListener('click', function () { document.querySelectorAll('[data-info].show').forEach(function (x) { x.classList.remove('show'); }); });
   document.querySelectorAll('details.check[data-src]').forEach(function (det) {
     det.addEventListener('toggle', function () { if (det.open && !det.dataset.loaded) { det.dataset.loaded = '1'; load(det); } });
   });
@@ -573,6 +591,11 @@ div.check,.check>summary{display:grid;grid-template-columns:22px 1fr auto;gap:4p
 .check[open] .caret{transform:rotate(90deg)}
 .cbody{padding:4px 0 14px 34px}
 .fix{background:var(--bg);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:10px 14px;margin-bottom:10px}
+.info{position:relative;display:inline-grid;place-items:center;width:17px;height:17px;margin-left:6px;vertical-align:1px;border-radius:50%;border:1.5px solid var(--muted);color:var(--muted);font:italic 700 11px/1 Georgia,serif;cursor:help}
+.info:hover,.info:focus-visible,.info.show{border-color:var(--accent);color:var(--accent);outline:none}
+.tip{display:none;position:fixed;z-index:20;left:8px;top:0;width:min(340px,calc(100vw - 16px));padding:10px 12px;border-radius:10px;background:var(--fg);color:var(--bg);font:400 13.5px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;text-align:left;box-shadow:0 8px 24px rgb(0 0 0/.25);cursor:auto}
+.tip strong{display:block;margin-bottom:3px;font-size:13px}
+.info:hover .tip,.info:focus-visible .tip,.info.show .tip{display:block}
 .fix ol{margin:6px 0 0;padding-left:20px}
 .fix li{margin:3px 0}
 .impact{margin:8px 0 0;font-size:13px;font-weight:600;color:var(--good)}

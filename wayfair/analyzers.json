@@ -3,8 +3,8 @@
   "period": "Aug 2026 vs Aug 2025 · SKU data last 90 days · fulfillment last 4 weeks",
   "analyzers": {
     "portal-health": {
-      "score": 70,
-      "headline": "Account in good standing, but a fill-rate alert and two 6-month-old tickets are open",
+      "score": 80,
+      "headline": "Account in good standing; a fill-rate alert is open, and 2 old tickets are waiting on Wayfair to close",
       "checks": {
         "account-status": {
           "status": "pass",
@@ -24,7 +24,7 @@
         "open-tickets": {
           "status": "warn",
           "value": "3 open",
-          "note": "2 “Supplier Outreach Request” (Products) tickets in progress since 13 Mar 2026"
+          "note": "2 Wayfair-opened “Supplier Outreach Request” tickets — you asked Wayfair to close them on 13 Mar 2026; they are still open"
         },
         "alerts": {
           "status": "warn",
@@ -42,9 +42,8 @@
           "value": 3
         },
         {
-          "label": "Oldest open ticket",
-          "value": "190 days",
-          "good": false
+          "label": "Waiting on Wayfair to close",
+          "value": 2
         },
         {
           "label": "PBSI urgent actions",
@@ -58,11 +57,11 @@
       ],
       "findings": [
         "No compliance, pricing or review violations — the account is in good standing.",
-        "Two product “Supplier Outreach Request” tickets (QAPH-3340280, QAPH-3331799) have been “In Progress” since 13 Mar 2026.",
+        "QAPH-3340280 and QAPH-3331799 were opened by Wayfair (customer question about a rug’s size/shape, Aug 2025). Home Weavers answered on 4 Aug 2025 and asked Wayfair to close them on 13 Mar 2026. The Close Ticket button is disabled for suppliers on Wayfair-opened tickets.",
         "Finance ticket DESK-673236 (WayUp inquiry) was updated 18 Sep 2026."
       ],
       "actions": [
-        "Chase or close the two March outreach tickets — stale tickets hide real issues.",
+        "Follow up with Wayfair to close QAPH-3340280 and QAPH-3331799 (see the “How to fix” steps).",
         "Fix the induction fill-rate alert (see Order & Fulfillment)."
       ],
       "tables": [
@@ -101,7 +100,7 @@
         }
       ],
       "source": "Home dashboard · Supplier Inbox · Fulfillment Performance dashboard",
-      "scoreNote": "100 − 10 (2 tickets older than 7 days) − 20 (induction fill rate below Wayfair threshold, alert raised) = 70."
+      "scoreNote": "100 − 20 (induction fill rate below Wayfair threshold, alert raised) = 80. The 2 March tickets are not deducted: they were opened by Wayfair, answered by Home Weavers, and only Wayfair can close them."
     },
     "listing-health": {
       "score": 60,
