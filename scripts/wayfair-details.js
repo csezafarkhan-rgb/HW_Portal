@@ -70,15 +70,16 @@ add('listing-health.duplicates', 'Potential duplicates', PCOLS, []);
 
 // ── Pricing Health ─────────────────────────────────────────
 const liveCat = catalog.filter(r => isLive(r.status));
-add('pricing-health.map', 'Live SKUs without MAP', ['Part #', 'Class', 'Product', 'Base cost', 'MSRP', 'Revenue (90d)', 'Units (90d)'],
-  liveCat.filter(r => !r.map_usd).map(r => [r.part_number, r.class, r.product_name, money(n(r.base_cost_usd)), r.msrp_usd ? money(n(r.msrp_usd)) : '—', money(n(prod.get(r.part_number)?.revenue_90d) || 0), n(prod.get(r.part_number)?.units_90d) || 0])
-    .sort((a, b) => b[6] - a[6]));
+const listingOf = r => r.listing_sku || prod.get(r.part_number)?.listing_sku || '';
+add('pricing-health.map', 'Live SKUs without MAP', ['Part #', 'Listing', 'Class', 'Product', 'Base cost', 'MSRP', 'Revenue (90d)', 'Units (90d)'],
+  liveCat.filter(r => !r.map_usd).map(r => [r.part_number, listingOf(r), r.class, r.product_name, money(n(r.base_cost_usd)), r.msrp_usd ? money(n(r.msrp_usd)) : '—', money(n(prod.get(r.part_number)?.revenue_90d) || 0), n(prod.get(r.part_number)?.units_90d) || 0])
+    .sort((a, b) => b[7] - a[7]));
 add('pricing-health.violations', 'SKUs with pricing violations', PCOLS, products.filter(r => r.pricing_violation).map(prow));
 
 // ── Promotions ─────────────────────────────────────────────
-const PROMO_COLS = ['Part #', 'Status', 'Class', 'Base cost', 'Current retail discounts', 'Upcoming retail events', 'Revenue (90d)', 'Units (90d)'];
-const promoRow = r => [r.part_number, r.status, r.class, money(n(r.base_cost_usd)), r.current_retail_discounts || '—', r.upcoming_retail_events || '—', money(n(prod.get(r.part_number)?.revenue_90d) || 0), n(prod.get(r.part_number)?.units_90d) || 0];
-const byUnits = (a, b) => b[7] - a[7];
+const PROMO_COLS = ['Part #', 'Listing', 'Status', 'Class', 'Base cost', 'Current retail discounts', 'Upcoming retail events', 'Revenue (90d)', 'Units (90d)'];
+const promoRow = r => [r.part_number, listingOf(r), r.status, r.class, money(n(r.base_cost_usd)), r.current_retail_discounts || '—', r.upcoming_retail_events || '—', money(n(prod.get(r.part_number)?.revenue_90d) || 0), n(prod.get(r.part_number)?.units_90d) || 0];
+const byUnits = (a, b) => b[8] - a[8];
 add('promotions.active', 'SKUs in a current promotion', PROMO_COLS, catalog.filter(r => r.current_retail_discounts).map(promoRow).sort(byUnits));
 add('promotions.upcoming', 'SKUs in upcoming events', PROMO_COLS, catalog.filter(r => r.upcoming_retail_events).map(promoRow).sort(byUnits));
 add('promotions.ending-soon', 'SKUs in NA Fall Sale (ends 22 Sep)', PROMO_COLS, catalog.filter(r => /Fall Sale/.test(r.current_retail_discounts)).map(promoRow).sort(byUnits));

@@ -1,4 +1,5 @@
 {
+  "productLink": { "column": "Listing", "url": "https://www.wayfair.com/keyword.php?keyword={sku}", "label": "View on Wayfair" },
   "links": {
     "portal-health": "https://partners.wayfair.com/d/ticket-inbox",
     "listing-health": "https://partners.wayfair.com/d/products/product-management/lists/performance",
