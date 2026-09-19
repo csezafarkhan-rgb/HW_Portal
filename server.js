@@ -392,9 +392,10 @@ function growthPlan(p) {
   ${s.steps?.length ? `<ol>${s.steps.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ol>` : ''}
   <div class="cactions">${s.check ? `<a class="btn ghost" href="#${escapeHtml(s.check.split('.')[0])}">See the data</a>` : ''}${safeUrl(s.link) ? `<a class="btn" href="${escapeHtml(s.link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(s.linkLabel || 'Open in portal')} ↗</a>` : ''}</div>
 </li>`).join('');
-  return `<section class="plan"><h2>Best next steps to grow sales</h2>
-<p class="muted">Ranked by expected revenue impact. Estimates are based on this portal's own numbers (see each step).</p>
-<ol class="plan-list">${items}</ol></section>`;
+  return `<details class="plan">
+<summary><span class="plan-sum"><h2>Best next steps to grow sales</h2><span class="muted">${plan.length} actions ranked by expected revenue impact · top: ${escapeHtml(plan[0].title)}</span></span><span class="caret" aria-hidden="true">▸</span></summary>
+<p class="muted">Estimates are based on this portal's own numbers (see each step).</p>
+<ol class="plan-list">${items}</ol></details>`;
 }
 
 function portalCard(p) {
@@ -588,6 +589,13 @@ div.check,.check>summary{display:grid;grid-template-columns:22px 1fr auto;gap:4p
 @media (max-width:640px){.check>summary{grid-template-columns:22px 1fr auto}.chips{grid-column:2/-1}.cbody{padding-left:0}.dl-tools{margin-left:0;width:100%}.dl-tools input{flex:1;min-width:0}}
 .plan{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:0 0 16px}
 .plan h2{margin:0 0 2px}
+.plan>summary{display:flex;gap:12px;align-items:center;justify-content:space-between;cursor:pointer;list-style:none;border-radius:8px}
+.plan>summary::-webkit-details-marker{display:none}
+.plan>summary:hover h2{color:var(--accent)}
+.plan>summary:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.plan[open]>summary .caret{transform:rotate(90deg)}
+.plan-sum{min-width:0}.plan-sum .muted{font-size:14px}
+.plan>p{margin:12px 0 0}
 .plan-list{list-style:none;padding:0;margin:12px 0 0;counter-reset:none}
 .plan-item{border-top:1px solid var(--line);padding:12px 0}
 .plan-item ol{margin:6px 0;padding-left:20px;font-size:14px}
