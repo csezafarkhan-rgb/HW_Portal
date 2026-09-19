@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const { marked } = require('marked');
+const PORTALS = require('./portals');
 
 const PORT = process.env.PORT || 3000;
 const USER = process.env.APP_USER;
@@ -120,17 +121,61 @@ function escapeHtml(s) {
   return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+// Registered portals first (in registry order), then any other <dir>/reports/ folders found on disk.
 function listPortals() {
-  return fs.readdirSync(ROOT, { withFileTypes: true })
-    .filter(d => d.isDirectory() && !d.name.startsWith('.') && !SKIP_DIRS.has(d.name))
+  const known = new Set(PORTALS.map(p => p.slug));
+  const extra = fs.readdirSync(ROOT, { withFileTypes: true })
+    .filter(d => d.isDirectory() && !d.name.startsWith('.') && !SKIP_DIRS.has(d.name) && !known.has(d.name))
     .filter(d => fs.existsSync(path.join(ROOT, d.name, 'reports')))
-    .map(d => d.name);
+    .map(d => ({ slug: d.name, name: titleCase(d.name), channel: '', from: '#57534E', to: '#A8A29E', ink: '#fff' }));
+  return [...PORTALS, ...extra].map(p => {
+    const started = fs.existsSync(path.join(ROOT, p.slug, 'reports'));
+    return { ...p, started, reports: started ? listReports(p.slug) : [] };
+  });
 }
 
 function listReports(portal) {
   return fs.readdirSync(path.join(ROOT, portal, 'reports'))
     .filter(f => /\.(md|html)$/i.test(f))
     .sort();
+}
+
+function initials(name) {
+  return name.replace(/'/g, '').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+}
+
+function statusLabel(p) {
+  if (p.reports.length) return `${p.reports.length} report${p.reports.length === 1 ? '' : 's'}`;
+  return p.started ? 'In progress' : 'Not started';
+}
+
+function portalCard(p) {
+  return `<a class="portal" href="/${encodeURIComponent(p.slug)}/" style="--from:${p.from};--to:${p.to};--ink:${p.ink}">
+  <span class="mono" aria-hidden="true">${escapeHtml(initials(p.name))}</span>
+  <span class="pname">${escapeHtml(p.name)}</span>
+  <span class="channel">${escapeHtml(p.channel)}</span>
+  <span class="status${p.started ? '' : ' idle'}">${statusLabel(p)}</span>
+</a>`;
+}
+
+function homePage(portals) {
+  const started = portals.filter(p => p.started).length;
+  const reports = portals.reduce((n, p) => n + p.reports.length, 0);
+  return `<h1>HomeWeavers portal analysis</h1>
+<p class="muted">${portals.length} portals · ${started} in progress · ${reports} report${reports === 1 ? '' : 's'}</p>
+<div class="grid">${portals.map(portalCard).join('')}</div>`;
+}
+
+function portalPage(p) {
+  const items = p.reports.map(f =>
+    `<a class="card" href="/${encodeURIComponent(p.slug)}/${encodeURIComponent(f)}">${escapeHtml(titleCase(f.replace(/\.(md|html)$/i, '')))}</a>`
+  ).join('');
+  const empty = p.started ? 'Analysis in progress — reports will appear here.' : 'Analysis not started yet.';
+  return `<div class="hero" style="--from:${p.from};--to:${p.to};--ink:${p.ink}">
+  <span class="mono" aria-hidden="true">${escapeHtml(initials(p.name))}</span>
+  <div><h1>${escapeHtml(p.name)}</h1><div class="channel">${escapeHtml(p.channel)}</div></div>
+</div>
+${items || `<p class="muted">${empty}</p>`}`;
 }
 
 function page(title, body) {
@@ -159,6 +204,24 @@ pre{background:var(--card);border:1px solid var(--line);padding:12px;overflow-x:
 .card{display:block;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:10px 0;text-decoration:none;color:var(--fg)}
 .card:hover{border-color:var(--accent)}
 .muted{color:var(--muted)}
+main:has(.grid){max-width:1180px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin-top:20px}
+.portal{position:relative;display:flex;flex-direction:column;min-height:170px;padding:18px;border-radius:14px;text-decoration:none;
+  color:var(--ink);background:linear-gradient(135deg,var(--from),var(--to));box-shadow:0 1px 2px rgb(0 0 0/.12);overflow:hidden;
+  transition:transform .15s ease,box-shadow .15s ease}
+.portal::after{content:"";position:absolute;right:-40px;bottom:-60px;width:180px;height:180px;border-radius:50%;background:rgb(255 255 255/.10)}
+.portal:hover,.portal:focus-visible{transform:translateY(-3px);box-shadow:0 10px 24px rgb(0 0 0/.22)}
+.portal:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+.mono{display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:rgb(255 255 255/.20);font-weight:700;font-size:15px;letter-spacing:.5px;color:var(--ink)}
+.pname{margin-top:14px;font-size:20px;font-weight:700;line-height:1.2}
+.channel{font-size:13px;opacity:.85;margin-top:2px}
+.status{margin-top:auto;align-self:flex-start;position:relative;z-index:1;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;background:rgb(255 255 255/.22)}
+.status.idle{background:rgb(0 0 0/.18)}
+.portal .status{margin-top:18px}
+.hero{display:flex;gap:16px;align-items:center;padding:22px;border-radius:14px;margin-bottom:20px;color:var(--ink);background:linear-gradient(135deg,var(--from),var(--to))}
+.hero h1{margin:0;font-size:26px}
+.hero .mono{width:52px;height:52px;font-size:18px}
+@media (prefers-reduced-motion:reduce){.portal{transition:none}.portal:hover{transform:none}}
 </style></head>
 <body><header><a href="/">HW Portals</a><form method="post" action="/logout"><button type="submit">Sign out</button></form></header><main>${body}</main></body></html>`;
 }
@@ -218,28 +281,16 @@ const server = http.createServer(async (req, res) => {
   const parts = url.pathname.split('/').filter(Boolean).map(decodeURIComponent);
   const portals = listPortals();
 
-  if (parts.length === 0) {
-    const cards = portals.map(p => {
-      const n = listReports(p).length;
-      return `<a class="card" href="/${encodeURIComponent(p)}/"><strong>${escapeHtml(titleCase(p))}</strong><br><span class="muted">${n} report${n === 1 ? '' : 's'}</span></a>`;
-    }).join('');
-    return send(res, 200, page('HW Portals', `<h1>HomeWeavers portal analysis</h1>${cards || '<p class="muted">No portals yet.</p>'}`));
-  }
+  if (parts.length === 0) return send(res, 200, page('HW Portals', homePage(portals)));
 
-  const portal = parts[0];
-  if (!portals.includes(portal)) return send(res, 404, page('Not found', '<h1>Not found</h1>'));
-  const reports = listReports(portal);
+  const portal = portals.find(p => p.slug === parts[0]);
+  if (!portal) return send(res, 404, page('Not found', '<h1>Not found</h1>'));
 
-  if (parts.length === 1) {
-    const items = reports.map(f =>
-      `<a class="card" href="/${encodeURIComponent(portal)}/${encodeURIComponent(f)}">${escapeHtml(titleCase(f.replace(/\.(md|html)$/i, '')))}</a>`
-    ).join('');
-    return send(res, 200, page(titleCase(portal), `<h1>${escapeHtml(titleCase(portal))}</h1>${items || '<p class="muted">Report in progress.</p>'}`));
-  }
+  if (parts.length === 1) return send(res, 200, page(portal.name, portalPage(portal)));
 
   const file = parts[1];
-  if (parts.length !== 2 || !reports.includes(file)) return send(res, 404, page('Not found', '<h1>Not found</h1>'));
-  const content = fs.readFileSync(path.join(ROOT, portal, 'reports', file), 'utf8');
+  if (parts.length !== 2 || !portal.reports.includes(file)) return send(res, 404, page('Not found', '<h1>Not found</h1>'));
+  const content = fs.readFileSync(path.join(ROOT, portal.slug, 'reports', file), 'utf8');
   // Standalone HTML reports are served as-is, so they carry no sign-out button of their own.
   if (/\.html$/i.test(file)) return send(res, 200, content);
   return send(res, 200, page(titleCase(file.replace(/\.md$/i, '')), marked.parse(content)));
