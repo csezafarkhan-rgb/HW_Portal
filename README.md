@@ -30,7 +30,7 @@ templates/       Reusable report / portal-map templates for new portals
 
 ## Web viewer (Render)
 
-`server.js` serves `<portal>/reports/*.md|html` behind HTTP Basic auth — nothing else in the repo is exposed.
+`server.js` serves `<portal>/reports/*.md|html` behind a login page (signed session cookie, 7-day sessions, 10 failed attempts per IP per 15 min) — nothing else in the repo is exposed. Changing `APP_PASSWORD` signs everyone out.
 Deployed as a Render web service (see `render.yaml`) with `APP_USER` / `APP_PASSWORD` env vars set in the Render dashboard.
 
 ```bash
