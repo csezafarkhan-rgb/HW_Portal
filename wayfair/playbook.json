@@ -1,5 +1,5 @@
 {
-  "productLink": { "column": "Listing", "url": "https://www.wayfair.com/keyword.php?keyword={sku}", "label": "View on Wayfair" },
+  "productLink": { "column": "Listing", "url": "https://partners.wayfair.com/d/product-merchandising/{sku}?brand=WF&country=US&locale=en-US", "label": "Open listing in Partner Home (has Wayfair’s live-site link)" },
   "links": {
     "portal-health": "https://partners.wayfair.com/d/ticket-inbox",
     "listing-health": "https://partners.wayfair.com/d/products/product-management/lists/performance",
