@@ -230,12 +230,13 @@ const ICONS = {
 };
 
 // Full detail tables (every promotion, campaign, SKU…) with a filter box and click-to-sort headers.
-function dataTable(t, i, pl) {
+function dataTable(t, i, links = []) {
   const head = t.columns.map((c, j) => `<th><button type="button" data-col="${j}">${escapeHtml(c)}</button></th>`).join('');
-  const pcol = pl && safeUrl(pl.url) ? t.columns.indexOf(pl.column) : -1;   // e.g. "Listing" → link to the product on the marketplace
+  const byCol = new Map(links.map(l => [t.columns.indexOf(l.column), l]).filter(([j]) => j >= 0));
   const cell = (c, j) => {
     const v = c == null ? '' : String(c);
-    if (j === pcol && /^[A-Za-z0-9]{5,15}$/.test(v)) return `<td><a class="plink" href="${escapeHtml(pl.url.replace('{sku}', encodeURIComponent(v)))}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(pl.label || 'View on site')}">${escapeHtml(v)} ↗</a></td>`;
+    const l = byCol.get(j);
+    if (l && /^[A-Za-z0-9]{5,15}$/.test(v)) return `<td><a class="plink" href="${escapeHtml(l.url.replace('{sku}', encodeURIComponent(v)))}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(l.label || '')}">${escapeHtml(v)} ↗</a></td>`;
     return `<td>${escapeHtml(v)}</td>`;
   };
   const body = t.rows.map(r => `<tr>${r.map(cell).join('')}</tr>`).join('');
@@ -303,6 +304,12 @@ function checkCounts(analysis) {
 
 const safeUrl = u => (/^https:\/\//.test(u || '') ? u : '');
 
+// Columns whose values link out (e.g. "Wayfair SKU" → the live product page). Set per portal in playbook.json.
+function productLinks(p) {
+  const raw = p?.playbook?.productLinks || (p?.playbook?.productLink ? [p.playbook.productLink] : []);
+  return raw.filter(l => l && l.column && safeUrl(l.url));
+}
+
 // Each check is a row; when it has a SKU list or a fix playbook it expands (click) to show them.
 function checksTable(a, r, p) {
   const rows = a.checks.map(c => {
@@ -325,8 +332,7 @@ function checksTable(a, r, p) {
     ].join('');
     const solution = fix?.solution?.length ? `<div class="fix"><strong>${res.status === 'pass' ? 'Keep it healthy' : 'Best solution'}</strong><ol>${fix.solution.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ol>${fix.impact ? `<p class="impact">Expected impact: ${escapeHtml(fix.impact)}</p>` : ''}</div>` : '';
     const actions = link ? `<a class="btn" href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(fix?.linkLabel || 'Fix in portal')} ↗</a>` : '';
-    const pl = p?.playbook?.productLink;
-    const plAttrs = list && pl && safeUrl(pl.url) ? ` data-plink-col="${escapeHtml(pl.column)}" data-plink-url="${escapeHtml(pl.url)}" data-plink-label="${escapeHtml(pl.label || 'View on site')}"` : '';
+    const plAttrs = list && productLinks(p).length ? ` data-plinks="${escapeHtml(JSON.stringify(productLinks(p)))}"` : '';
     return `<details class="check"${list ? ` data-src="/${encodeURIComponent(p.slug)}/details/${encodeURIComponent(key)}.json"` : ''}${plAttrs}>
   <summary>${head}<span class="chips">${chips}<span class="caret" aria-hidden="true">▸</span></span></summary>
   <div class="cbody">${solution}${actions ? `<div class="cactions">${actions}</div>` : ''}${list ? '<div class="dl" aria-live="polite"><p class="muted">Loading…</p></div>' : ''}</div>
@@ -355,9 +361,11 @@ const CHECK_SCRIPT = `<script>
     });
     var shown = rows.slice(0, state.limit);
     var head = d.columns.map(function (c, i) { return '<th><button type="button" data-col="' + i + '"' + (state.col === i ? ' data-dir="' + state.dir + '"' : '') + '>' + esc(c) + '</button></th>'; }).join('');
-    var pcol = state.plink ? d.columns.indexOf(state.plink.col) : -1;
+    var byCol = {};
+    (state.plinks || []).forEach(function (l) { var i = d.columns.indexOf(l.column); if (i >= 0) byCol[i] = l; });
     var cell = function (c, i) {
-      if (i === pcol && /^[A-Za-z0-9]{5,15}$/.test(String(c))) return '<td><a class="plink" href="' + esc(state.plink.url.replace('{sku}', encodeURIComponent(c))) + '" target="_blank" rel="noopener noreferrer" title="' + esc(state.plink.label) + '">' + esc(c) + ' ↗</a></td>';
+      var l = byCol[i];
+      if (l && /^[A-Za-z0-9]{5,15}$/.test(String(c))) return '<td><a class="plink" href="' + esc(l.url.replace('{sku}', encodeURIComponent(c))) + '" target="_blank" rel="noopener noreferrer" title="' + esc(l.label || '') + '">' + esc(c) + ' ↗</a></td>';
       return '<td>' + esc(c) + '</td>';
     };
     var body = shown.map(function (r) { return '<tr>' + r.map(cell).join('') + '</tr>'; }).join('')
@@ -371,7 +379,7 @@ const CHECK_SCRIPT = `<script>
   function load(det) {
     var box = det.querySelector('.dl');
     fetch(det.dataset.src, { credentials: 'same-origin' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (d) {
-      var state = { q: '', col: null, dir: 'asc', limit: PAGE, plink: det.dataset.plinkUrl ? { col: det.dataset.plinkCol, url: det.dataset.plinkUrl, label: det.dataset.plinkLabel } : null };
+      var state = { q: '', col: null, dir: 'asc', limit: PAGE, plinks: det.dataset.plinks ? JSON.parse(det.dataset.plinks) : [] };
       box.innerHTML = '<div class="dl-head"><strong>' + esc(d.title) + '</strong> <span class="muted dl-count"></span>'
         + '<span class="dl-tools"><input type="search" placeholder="Filter…" aria-label="Filter rows"><button type="button" class="btn ghost dl-csv">Download CSV</button></span></div>'
         + (d.note ? '<p class="muted dl-note">' + esc(d.note) + '</p>' : '')
@@ -519,7 +527,7 @@ ${checksTable(a, r, p)}
 ${CHECK_SCRIPT}
 ${list('Findings', r.findings)}
 ${list('Recommended actions', r.actions)}
-${(r.tables || []).map((t, i) => dataTable(t, i, p.playbook?.productLink)).join('')}
+${(r.tables || []).map((t, i) => dataTable(t, i, productLinks(p))).join('')}
 ${r.tables?.length ? TABLE_SCRIPT : ''}
 ${r.scoreNote ? `<h2>How this was scored</h2><p class="muted">${escapeHtml(r.scoreNote)}</p>` : ''}
 ${r.source ? `<p class="muted">Source: ${escapeHtml(r.source)}</p>` : ''}`;

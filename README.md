@@ -32,6 +32,7 @@ templates/       Reusable report / portal-map templates for new portals
 
 ```
 <portal>/data/raw/*.csv        Portal exports (local only, not committed)
+                               Wayfair: products-90d, inventory, catalog, skus (part → Wayfair SKU / mplvId)
 scripts/<portal>-details.js    → <portal>/details/*.json   click-through SKU list per check (+ index.json)
 scripts/<portal>-plan.js       → <portal>/analyzers.json   scores, checks, findings, ranked growth plan
 <portal>/playbook.json         Best-solution steps + "Fix in portal" link per check

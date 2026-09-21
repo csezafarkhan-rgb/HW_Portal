@@ -1,5 +1,8 @@
 {
-  "productLink": { "column": "Listing", "url": "https://partners.wayfair.com/d/product-merchandising/{sku}?brand=WF&country=US&locale=en-US", "label": "Open listing in Partner Home (has Wayfair’s live-site link)" },
+  "productLinks": [
+    { "column": "Wayfair SKU", "url": "https://www.wayfair.com/pdp/-id-{sku}.html", "label": "Open the live product page on wayfair.com" },
+    { "column": "Listing", "url": "https://partners.wayfair.com/d/product-merchandising/{sku}?brand=WF&country=US&locale=en-US", "label": "Open the listing in Partner Home" }
+  ],
   "links": {
     "portal-health": "https://partners.wayfair.com/d/ticket-inbox",
     "listing-health": "https://partners.wayfair.com/d/products/product-management/lists/performance",

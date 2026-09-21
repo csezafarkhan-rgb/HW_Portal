@@ -34,6 +34,10 @@ const load = f => parseCsv(fs.readFileSync(path.join(RAW, f), 'utf8'));
 const products = load('wayfair-products-90d.csv');
 const inventory = load('wayfair-inventory.csv');
 const catalog = load('wayfair-catalog.csv');
+// part number → Wayfair SKU (mplvId). The live page is https://www.wayfair.com/pdp/-id-<wayfair sku>.html
+const wfSku = new Map(
+  (fs.existsSync(path.join(RAW, 'wayfair-skus.csv')) ? load('wayfair-skus.csv') : []).map(r => [r.part_number, r.wayfair_sku]));
+const wf = pn => wfSku.get(pn) || '';
 
 const inv = new Map(inventory.map(r => [r.part_number, r]));
 const cat = new Map(catalog.map(r => [r.part_number, r]));
@@ -48,8 +52,8 @@ const cls = pn => cat.get(pn)?.class || '';
 const cost = pn => (cat.get(pn)?.base_cost_usd ? money(cat.get(pn).base_cost_usd) : '—');
 
 // Common product columns
-const PCOLS = ['Part #', 'Listing', 'Status', 'Revenue (90d)', 'Units (90d)', 'Visits (90d)', 'Conversion', 'Rating', 'Reviews', 'Available stock'];
-const prow = r => [r.part_number, r.listing_sku, r.status, money(n(r.revenue_90d)), n(r.units_90d), n(r.unique_visits), r.conversion_pct ? `${r.conversion_pct}%` : '—', r.avg_rating || '—', n(r.review_count) || 0, stock(r.part_number)];
+const PCOLS = ['Part #', 'Wayfair SKU', 'Listing', 'Status', 'Revenue (90d)', 'Units (90d)', 'Visits (90d)', 'Conversion', 'Rating', 'Reviews', 'Available stock'];
+const prow = r => [r.part_number, wf(r.part_number), r.listing_sku, r.status, money(n(r.revenue_90d)), n(r.units_90d), n(r.unique_visits), r.conversion_pct ? `${r.conversion_pct}%` : '—', r.avg_rating || '—', n(r.review_count) || 0, stock(r.part_number)];
 
 const out = {};
 const add = (key, title, columns, rows, note) => { out[key] = { title, note, columns, rows }; };
@@ -62,24 +66,24 @@ add('listing-health.suppressed', 'Not Live / partly live SKUs', PCOLS,
   'Sorted by 90-day revenue — SKUs at the top were selling before they went offline.');
 add('listing-health.warnings', 'SKUs with warnings or problems', [...PCOLS, 'Warnings', 'Problems'],
   products.filter(r => r.warnings || r.problems).map(r => [...prow(r), r.warnings, r.problems]));
-add('listing-health.attributes', 'SKUs missing attributes', ['Part #', 'Listing', 'Status', 'Missing attributes', 'Revenue (90d)', 'Units (90d)', 'Visits (90d)', 'Class'],
+add('listing-health.attributes', 'SKUs missing attributes', ['Part #', 'Wayfair SKU', 'Listing', 'Status', 'Missing attributes', 'Revenue (90d)', 'Units (90d)', 'Visits (90d)', 'Class'],
   products.filter(r => n(r.attributes_missing) > 0).sort((a, b) => byRev(a, b) || n(b.attributes_missing) - n(a.attributes_missing))
-    .map(r => [r.part_number, r.listing_sku, r.status, n(r.attributes_missing), money(n(r.revenue_90d)), n(r.units_90d), n(r.unique_visits), cls(r.part_number)]),
+    .map(r => [r.part_number, wf(r.part_number), r.listing_sku, r.status, n(r.attributes_missing), money(n(r.revenue_90d)), n(r.units_90d), n(r.unique_visits), cls(r.part_number)]),
   'Sorted by revenue so the attributes that matter most are fixed first.');
 add('listing-health.duplicates', 'Potential duplicates', PCOLS, []);
 
 // ── Pricing Health ─────────────────────────────────────────
 const liveCat = catalog.filter(r => isLive(r.status));
 const listingOf = r => r.listing_sku || prod.get(r.part_number)?.listing_sku || '';
-add('pricing-health.map', 'Live SKUs without MAP', ['Part #', 'Listing', 'Class', 'Product', 'Base cost', 'MSRP', 'Revenue (90d)', 'Units (90d)'],
-  liveCat.filter(r => !r.map_usd).map(r => [r.part_number, listingOf(r), r.class, r.product_name, money(n(r.base_cost_usd)), r.msrp_usd ? money(n(r.msrp_usd)) : '—', money(n(prod.get(r.part_number)?.revenue_90d) || 0), n(prod.get(r.part_number)?.units_90d) || 0])
-    .sort((a, b) => b[7] - a[7]));
+add('pricing-health.map', 'Live SKUs without MAP', ['Part #', 'Wayfair SKU', 'Listing', 'Class', 'Product', 'Base cost', 'MSRP', 'Revenue (90d)', 'Units (90d)'],
+  liveCat.filter(r => !r.map_usd).map(r => [r.part_number, wf(r.part_number), listingOf(r), r.class, r.product_name, money(n(r.base_cost_usd)), r.msrp_usd ? money(n(r.msrp_usd)) : '—', money(n(prod.get(r.part_number)?.revenue_90d) || 0), n(prod.get(r.part_number)?.units_90d) || 0])
+    .sort((a, b) => b[8] - a[8]));
 add('pricing-health.violations', 'SKUs with pricing violations', PCOLS, products.filter(r => r.pricing_violation).map(prow));
 
 // ── Promotions ─────────────────────────────────────────────
-const PROMO_COLS = ['Part #', 'Listing', 'Status', 'Class', 'Base cost', 'Current retail discounts', 'Upcoming retail events', 'Revenue (90d)', 'Units (90d)'];
-const promoRow = r => [r.part_number, listingOf(r), r.status, r.class, money(n(r.base_cost_usd)), r.current_retail_discounts || '—', r.upcoming_retail_events || '—', money(n(prod.get(r.part_number)?.revenue_90d) || 0), n(prod.get(r.part_number)?.units_90d) || 0];
-const byUnits = (a, b) => b[8] - a[8];
+const PROMO_COLS = ['Part #', 'Wayfair SKU', 'Listing', 'Status', 'Class', 'Base cost', 'Current retail discounts', 'Upcoming retail events', 'Revenue (90d)', 'Units (90d)'];
+const promoRow = r => [r.part_number, wf(r.part_number), listingOf(r), r.status, r.class, money(n(r.base_cost_usd)), r.current_retail_discounts || '—', r.upcoming_retail_events || '—', money(n(prod.get(r.part_number)?.revenue_90d) || 0), n(prod.get(r.part_number)?.units_90d) || 0];
+const byUnits = (a, b) => b[9] - a[9];
 add('promotions.active', 'SKUs in a current promotion', PROMO_COLS, catalog.filter(r => r.current_retail_discounts).map(promoRow).sort(byUnits));
 add('promotions.upcoming', 'SKUs in upcoming events', PROMO_COLS, catalog.filter(r => r.upcoming_retail_events).map(promoRow).sort(byUnits));
 add('promotions.ending-soon', 'SKUs in NA Fall Sale (ends 22 Sep)', PROMO_COLS, catalog.filter(r => /Fall Sale/.test(r.current_retail_discounts)).map(promoRow).sort(byUnits));
@@ -90,9 +94,9 @@ add('promotions.top-seller-coverage', 'Top 100 sellers — promotions', ['#', ..
 add('promotions.discount-depth', 'Current retail discount per live SKU', PROMO_COLS, liveCat.map(promoRow).sort(byUnits));
 
 // ── Inventory Health ───────────────────────────────────────
-const INV_COLS = ['Part #', 'Listing', 'Status', 'Class', 'Available', 'On order', 'Revenue (90d)', 'Units (90d)', 'Visits (90d)', 'Base cost', 'Stale feed', 'Last submitted'];
-const invRow = r => { const p = prod.get(r.part_number) || {}; return [r.part_number, r.listing_sku, p.status || r.part_status, cls(r.part_number), n(r.available), n(r.on_order), money(n(p.revenue_90d) || 0), n(p.units_90d) || 0, n(p.unique_visits) || 0, cost(r.part_number), r.stale_inventory || '', (r.last_submitted || '').slice(0, 10)]; };
-const byInvRev = (a, b) => b[7] - a[7] || b[8] - a[8];
+const INV_COLS = ['Part #', 'Wayfair SKU', 'Listing', 'Status', 'Class', 'Available', 'On order', 'Revenue (90d)', 'Units (90d)', 'Visits (90d)', 'Base cost', 'Stale feed', 'Last submitted'];
+const invRow = r => { const p = prod.get(r.part_number) || {}; return [r.part_number, wf(r.part_number), r.listing_sku, p.status || r.part_status, cls(r.part_number), n(r.available), n(r.on_order), money(n(p.revenue_90d) || 0), n(p.units_90d) || 0, n(p.unique_visits) || 0, cost(r.part_number), r.stale_inventory || '', (r.last_submitted || '').slice(0, 10)]; };
+const byInvRev = (a, b) => b[8] - a[8] || b[9] - a[9];
 const oos = inventory.filter(r => !n(r.available));
 add('inventory-health.oos-count', 'Out-of-stock SKUs', INV_COLS, oos.map(invRow).sort(byInvRev),
   'Sorted by units sold in the last 90 days — restock the ones at the top first.');
