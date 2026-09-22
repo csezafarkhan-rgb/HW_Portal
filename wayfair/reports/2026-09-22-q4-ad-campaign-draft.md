@@ -123,13 +123,27 @@ carry more volume. Total combined spend stays under $55/day.
 | Schedule | Starts 09/22/2026, no end date |
 | Targeting | Product targeting |
 | Bidding | AI auto-bidding, 730% target ROAS (Wayfair's suggested figure) |
-| Products | **16 listings** |
+| Products | **4 listings** (after removing everything already advertised) |
 
-**Listings included:** DRBH6308, DRBH6314, FBWX1122, FBWX1127, FBWX1138, FBWX1427, FBWX1428, FBWX1430,
-FBWX1438, FBWX1454, FBWX1491, FBWX1913, FBWX1943, HSHM2194, RBSD7856, WNPP2016.
+**Listings included:** FBWX1138, FBWX1491, FBWX1913, HSHM2194.
 
-Wayfair advertises **listings, not part numbers**, so the 29 part numbers collapsed into these 16
-listings — and every colour variant on those listings is included, including ones that are out of stock.
+### Cross-check against existing campaigns
+
+The campaign first held 16 listings. Checking them against every active campaign showed most were
+already being advertised, so they were removed rather than duplicated:
+
+| Active campaign | Listings | Overlap |
+|---|---|---|
+| Top Priority SKUs ($70/day) | 42 | 11 — DRBH6308, DRBH6314, FBWX1122, FBWX1127, FBWX1427, FBWX1428, FBWX1430, FBWX1438, FBWX1454, RBSD7856, WNPP2016 |
+| Impression & Element ($45/day) | 40 | 1 — FBWX1943 |
+| HIGH_POTENTIAL_SKU 051926 ($20/day) | 9 | 0 |
+
+**So the real problem is not coverage — it is performance.** The top sellers are already advertised and
+have produced **$0 attributed revenue on $71.14 of spend in the last 28 days**. Fix those campaigns
+(bids, budget, attribution) rather than adding another campaign on the same products.
+
+Wayfair advertises **listings, not part numbers**, so the 29 part numbers first collapsed into 16
+listings; every colour variant on a listing is included, including ones that are out of stock.
 
 ### Before switching it on
 1. **Raise the wallet daily cap** from $100 — the three existing campaigns already allow $135/day, and this adds $45.
