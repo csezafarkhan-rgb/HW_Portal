@@ -1,6 +1,8 @@
 # Wayfair Q4 Ad Campaign — draft for approval
 
-**Prepared:** 22 Sep 2026 · **Status:** DRAFT — nothing has been created in Wayfair yet
+**Prepared:** 22 Sep 2026 · **Status:** ✅ CREATED IN WAYFAIR AND **PAUSED** — campaign ID **707030**
+([open it](https://partners.wayfair.com/d/advertising/campaign/edit/pt/707030)). It will not spend
+anything until someone sets it to Active.
 **Account:** HomeWeaversInc (19440) · **Wallet:** $926.10 + $4,000 voucher credit available
 
 ---
@@ -109,13 +111,30 @@ carry more volume. Total combined spend stays under $55/day.
 
 ---
 
-## 4. How this gets created
+## 4. What was actually created (22 Sep 2026)
 
-Creating or changing campaigns spends real money, so nothing has been created. On approval, either:
+| Setting | As created |
+|---|---|
+| Campaign | **HW Q4 2026 - Top Sellers In Stock** (ID 707030) |
+| Status | **Paused** — no spend until set to Active |
+| Store | Wayfair.com (US) only — the Canada/Perigold/UK copies Wayfair offers were left off |
+| Customers | Residential (B2C) + Professional (B2B) |
+| Daily cap | $45 |
+| Schedule | Starts 09/22/2026, no end date |
+| Targeting | Product targeting |
+| Bidding | AI auto-bidding, 730% target ROAS (Wayfair's suggested figure) |
+| Products | **16 listings** |
 
-**A. I create it in Partner Home** (Advertising → Create Campaign → Sponsored Products), set the daily
-cap, add the 30 SKUs, and **leave it paused** for you to switch on.
+**Listings included:** DRBH6308, DRBH6314, FBWX1122, FBWX1127, FBWX1138, FBWX1427, FBWX1428, FBWX1430,
+FBWX1438, FBWX1454, FBWX1491, FBWX1913, FBWX1943, HSHM2194, RBSD7856, WNPP2016.
 
-**B. You create it** and I supply the SKU list as a file for the bulk upload.
+Wayfair advertises **listings, not part numbers**, so the 29 part numbers collapsed into these 16
+listings — and every colour variant on those listings is included, including ones that are out of stock.
 
-Either way, raise the wallet daily cap first, or the new campaign will be throttled by the existing $100/day limit.
+### Before switching it on
+1. **Raise the wallet daily cap** from $100 — the three existing campaigns already allow $135/day, and this adds $45.
+2. **Decide the bidding.** AI auto-bidding needs ~50 ad-attributed orders per 30 days to learn, and this
+   account currently has **zero attributed orders** (last 28 days: $71.14 spent, 14,776 impressions, 0% ROAS).
+   Manual bidding with Wayfair's suggested bids (~$0.20–0.26) is the safer start; the switch is in Campaign Settings.
+3. **Restock first** where possible — of the 16 listings, several have variants with no stock.
+4. Set **auto-pay** (voucher deduction, trigger $300, top-up $1,500) so the wallet doesn't empty again.
