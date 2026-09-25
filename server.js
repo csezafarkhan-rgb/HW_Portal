@@ -439,6 +439,26 @@ const CHECK_SCRIPT = `<script>
 </script>`;
 
 // Ranked "what to do next" list: analysis.plan → [{ title, why, steps:[], impact, effort, priority, check }]
+// The analyzers are collapsed, so a jump link or a #hash has to open its section before scrolling.
+const JUMP_SCRIPT = `<script>
+(function(){
+  function reveal(id){
+    var d = document.getElementById(id);
+    if (!d || d.tagName !== 'DETAILS') return false;
+    d.open = true;
+    d.scrollIntoView({ block: 'start' });
+    return true;
+  }
+  var jump = document.querySelector('.jump');
+  if (jump) jump.addEventListener('click', function(e){
+    var a = e.target.closest('a[href^="#"]');
+    if (a && reveal(a.getAttribute('href').slice(1))) e.preventDefault();
+  });
+  if (location.hash) reveal(location.hash.slice(1));
+  window.addEventListener('hashchange', function(){ reveal(location.hash.slice(1)); });
+})();
+</script>`;
+
 function growthPlan(p) {
   const plan = p.analysis.plan || [];
   if (!plan.length) return '';
@@ -497,11 +517,12 @@ function portalPage(p) {
   const sections = ANALYZERS.map(a => {
     const r = analysis.analyzers?.[a.key];
     const b = band(r?.score);
-    return `<section class="analyzer ${b.cls}" id="${a.key}">
-  <div class="an-head">${icon(a.icon)}<div class="an-title"><h2>${escapeHtml(a.name)}</h2><div class="muted">${escapeHtml(r?.headline || a.desc)}</div></div>${ring(r?.score)}</div>
+    // Collapsed by default: ten analyzers of checks is a wall of text, and most visits are about one of them.
+    return `<details class="analyzer ${b.cls}" id="${a.key}">
+  <summary class="an-head">${icon(a.icon)}<div class="an-title"><h2>${escapeHtml(a.name)}</h2><div class="muted">${escapeHtml(r?.headline || a.desc)}</div></div>${ring(r?.score)}<span class="caret" aria-hidden="true">›</span></summary>
   ${checksTable(a, r, p)}
   <a class="more" href="/${encodeURIComponent(p.slug)}/${a.key}">${r ? `Findings, actions & metrics${r.tables?.length ? ` · ${r.tables.map(t => `${t.rows.length} ${t.title.toLowerCase()}`).join(' · ')}` : ''} →` : 'Details →'}</a>
-</section>`;
+</details>`;
   }).join('');
   const jump = ANALYZERS.map(a => `<a href="#${a.key}"><i class="dot ${band(analysis.analyzers?.[a.key]?.score).cls}"></i>${escapeHtml(a.name)}</a>`).join('');
   const reports = p.reports.map(f =>
@@ -519,7 +540,8 @@ ${growthPlan(p)}
 ${sections}
 ${tools}
 ${reports ? `<h2>Reports</h2>${reports}` : ''}
-${CHECK_SCRIPT}`;
+${CHECK_SCRIPT}
+${JUMP_SCRIPT}`;
 }
 
 function analyzerPage(p, a) {
@@ -563,7 +585,7 @@ header form{margin:0}
 header form button{background:none;border:1px solid var(--line);border-radius:6px;color:var(--muted);font:inherit;font-size:14px;padding:4px 10px;cursor:pointer}
 header form button:hover{color:var(--fg);border-color:var(--accent)}
 header a{color:var(--fg);text-decoration:none;font-weight:600}
-main{max-width:960px;margin:0 auto;padding:24px 16px 64px}
+main{max-width:1320px;margin:0 auto;padding:24px 20px 64px}
 a{color:var(--accent)}
 h1,h2,h3{line-height:1.25}
 table{border-collapse:collapse;width:100%;display:block;overflow-x:auto;margin:16px 0}
@@ -574,7 +596,7 @@ pre{background:var(--card);border:1px solid var(--line);padding:12px;overflow-x:
 .card{display:block;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:10px 0;text-decoration:none;color:var(--fg)}
 .card:hover{border-color:var(--accent)}
 .muted{color:var(--muted)}
-main:has(.grid){max-width:1180px}
+main:has(.grid){max-width:1480px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin-top:20px}
 .portal{position:relative;display:flex;flex-direction:column;min-height:170px;padding:18px;border-radius:14px;text-decoration:none;
   color:var(--ink);background:linear-gradient(135deg,var(--from),var(--to));box-shadow:0 1px 2px rgb(0 0 0/.12);overflow:hidden;
@@ -617,6 +639,12 @@ main:has(.grid){max-width:1180px}
 .jump .dot{box-shadow:none}
 .analyzer{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:12px;padding:16px;margin:0 0 14px;scroll-margin-top:12px}
 .analyzer.good{border-left-color:var(--good)}.analyzer.warn{border-left-color:var(--warn)}.analyzer.bad{border-left-color:var(--bad)}
+summary.an-head{cursor:pointer;list-style:none;border-radius:8px}
+summary.an-head::-webkit-details-marker{display:none}
+summary.an-head:hover .an-title h2{color:var(--accent)}
+summary.an-head:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.analyzer[open]>summary.an-head{margin-bottom:2px}
+.analyzer[open]>summary.an-head .caret{transform:rotate(90deg)}
 .an-head{display:flex;gap:12px;align-items:center}
 .an-title{flex:1;min-width:0}.an-title h2{margin:0;font-size:18px}.an-title .muted{font-size:14px}
 .ico{width:24px;height:24px;flex:none;fill:none;stroke:var(--accent);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
