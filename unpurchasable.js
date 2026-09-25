@@ -44,7 +44,7 @@ function loadUnpurchasable(root, slug) {
 }
 
 const CSS = `
-main:has(.ubar){max-width:100%;padding-left:24px;padding-right:24px}
+/* Same page width as every other page; the table columns are percentages so they scale to it. */
 .warnbox{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--bad);border-radius:10px;padding:12px 16px;margin:0 0 16px;font-size:14px}
 .ufilters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
 .ufilters button{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:13px;padding:4px 12px;border:1px solid var(--line);border-radius:999px;color:var(--fg);background:var(--card);cursor:pointer}
