@@ -8,6 +8,7 @@ const zlib = require('node:zlib');
 const { marked } = require('marked');
 const PORTALS = require('./portals');
 const ANALYZERS = require('./analyzers');
+const UNPURCHASABLE = require('./unpurchasable');
 
 const PORT = process.env.PORT || 3000;
 const USER = process.env.APP_USER;
@@ -497,12 +498,17 @@ function portalPage(p) {
   const reports = p.reports.map(f =>
     `<a class="card" href="/${encodeURIComponent(p.slug)}/${encodeURIComponent(f)}">${escapeHtml(titleCase(f.replace(/\.(md|html)$/i, '')))}</a>`
   ).join('');
+  const unpurch = UNPURCHASABLE.loadUnpurchasable(ROOT, p.slug);
+  const tools = unpurch ? `<h2>Tools</h2><a class="card" href="/${encodeURIComponent(p.slug)}/unpurchasable">
+<strong>Unpurchasable parts — discontinue review (${unpurch.total})</strong>
+<div class="muted">Every part at zero available stock, with 90-day sales, reviews and a recommended action. Tick the ones to discontinue.</div></a>` : '';
   return `${hero(p, escapeHtml(p.channel))}
 <div class="summary">${ring(score, true)}<div><strong>Overall portal score</strong><div class="muted">${score !== null ? `${band(score).label} · average of ${Object.keys(analysis.analyzers).length} analyzers` : p.started ? 'Analysis in progress' : 'Analysis not started yet'}${meta ? `<br>${meta}` : ''}</div></div>
 <div class="counts"><span class="good">${counts.pass} OK</span><span class="warn">${counts.warn} attention</span><span class="bad">${counts.fail} problems</span><span class="none">${counts.total - counts.pass - counts.warn - counts.fail} not checked</span></div></div>
 ${growthPlan(p)}
 <nav class="jump">${jump}</nav>
 ${sections}
+${tools}
 ${reports ? `<h2>Reports</h2>${reports}` : ''}
 ${CHECK_SCRIPT}`;
 }
@@ -690,7 +696,7 @@ div.check,.check>summary{display:grid;grid-template-columns:22px 1fr auto;gap:4p
 .hero h1{margin:0;font-size:26px}
 .hero .mono{width:52px;height:52px;font-size:18px}
 @media (prefers-reduced-motion:reduce){.portal{transition:none}.portal:hover{transform:none}}
-</style></head>
+${UNPURCHASABLE.CSS}</style></head>
 <body><header><a href="/">HW Portals</a><div class="hright">${THEME_TOGGLE}<form method="post" action="/logout"><button type="submit">Sign out</button></form></div></header><main>${body}</main></body></html>`;
 }
 
@@ -766,6 +772,13 @@ const server = http.createServer(async (req, res) => {
     const gzip = /\bgzip\b/.test(req.headers['accept-encoding'] || '');
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'private, no-cache', ...(gzip && { 'Content-Encoding': 'gzip' }) });
     return res.end(gzip ? zlib.gzipSync(raw) : raw);
+  }
+
+  // Zero-stock review list, where the user picks which parts to discontinue.
+  if (parts.length === 2 && parts[1] === 'unpurchasable') {
+    const d = UNPURCHASABLE.loadUnpurchasable(ROOT, portal.slug);
+    if (!d) return send(res, 404, page('Not found', '<h1>No unpurchasable list for this portal yet</h1>'));
+    return send(res, 200, page(`Unpurchasable parts · ${portal.name}`, UNPURCHASABLE.unpurchasablePage(portal, d, { escapeHtml, hero })));
   }
 
   const analyzer = ANALYZERS.find(a => a.key === parts[1]);
