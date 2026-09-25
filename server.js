@@ -500,8 +500,8 @@ function portalPage(p) {
   ).join('');
   const unpurch = UNPURCHASABLE.loadUnpurchasable(ROOT, p.slug);
   const tools = unpurch ? `<h2>Tools</h2><a class="card" href="/${encodeURIComponent(p.slug)}/unpurchasable">
-<strong>Unpurchasable parts — discontinue review (${unpurch.total})</strong>
-<div class="muted">Every part at zero available stock, with 90-day sales, reviews and a recommended action. Tick the ones to discontinue.</div></a>` : '';
+<strong>Unpurchasable parts — discontinue, reactivate or restock (${unpurch.total})</strong>
+<div class="muted">Every part Wayfair flags as unpurchasable, with live stock, 90-day sales, reviews and a recommended action. Mark the ones to discontinue or reactivate and export Wayfair's upload file.</div></a>` : '';
   return `${hero(p, escapeHtml(p.channel))}
 <div class="summary">${ring(score, true)}<div><strong>Overall portal score</strong><div class="muted">${score !== null ? `${band(score).label} · average of ${Object.keys(analysis.analyzers).length} analyzers` : p.started ? 'Analysis in progress' : 'Analysis not started yet'}${meta ? `<br>${meta}` : ''}</div></div>
 <div class="counts"><span class="good">${counts.pass} OK</span><span class="warn">${counts.warn} attention</span><span class="bad">${counts.fail} problems</span><span class="none">${counts.total - counts.pass - counts.warn - counts.fail} not checked</span></div></div>

@@ -25,3 +25,6 @@ __pycache__/
 # Node
 node_modules/
 **/data/exports/
+
+# Local dev server config (ports, env) - machine specific
+.claude/

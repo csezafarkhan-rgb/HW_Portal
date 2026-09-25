@@ -5,7 +5,8 @@
   "description": "HomeWeavers marketplace portal analysis reports (password-protected viewer)",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node --env-file-if-exists=.env server.js"
   },
   "engines": {
     "node": ">=20"
