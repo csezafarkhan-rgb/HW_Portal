@@ -276,6 +276,14 @@ function ring(score, big) {
   return `<span class="ring ${b.cls}${big ? ' big' : ''}" style="--p:${p}" role="img" aria-label="${typeof score === 'number' ? `Score ${score} of 100, ${b.label}` : b.label}"><b>${typeof score === 'number' ? score : '–'}</b></span>`;
 }
 
+// "2026-09-22" -> "22 Sep 2026". Anything that isn't a plain ISO date is shown as supplied.
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+function fmtDate(value) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || '').trim());
+  if (!m) return String(value || '');
+  return `${Number(m[3])} ${MONTHS[Number(m[2]) - 1]} ${m[1]}`;
+}
+
 function statusLabel(p) {
   const done = Object.keys(p.analysis.analyzers || {}).length;
   if (done) return `${done}/${ANALYZERS.length} analyzers`;
@@ -461,6 +469,7 @@ function portalCard(p) {
   <span class="channel">${escapeHtml(p.channel)}</span>
   <span class="arows">${rows}</span>
   <span class="status${p.started ? '' : ' idle'}">${counts.pass + flagged ? `${flagged} of ${counts.total} checks flagged` : statusLabel(p)}</span>
+  <span class="upd">${p.analysis.updated ? `Updated ${escapeHtml(fmtDate(p.analysis.updated))}` : 'No data yet'}</span>
 </a>`;
 }
 
@@ -483,7 +492,7 @@ function hero(p, sub) {
 function portalPage(p) {
   const { analysis } = p;
   const score = overallScore(analysis);
-  const meta = [analysis.period && `Period: ${escapeHtml(analysis.period)}`, analysis.updated && `Updated ${escapeHtml(analysis.updated)}`].filter(Boolean).join(' · ');
+  const meta = [analysis.period && `Period: ${escapeHtml(analysis.period)}`, analysis.updated && `Updated ${escapeHtml(fmtDate(analysis.updated))}`].filter(Boolean).join(' · ');
   const counts = checkCounts(analysis);
   const sections = ANALYZERS.map(a => {
     const r = analysis.analyzers?.[a.key];
@@ -579,6 +588,7 @@ main:has(.grid){max-width:1180px}
 .status{margin-top:auto;align-self:flex-start;position:relative;z-index:1;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;background:rgb(255 255 255/.22)}
 .status.idle{background:rgb(0 0 0/.18)}
 .portal .status{margin-top:14px}
+.upd{position:relative;z-index:1;margin-top:6px;font-size:11.5px;opacity:.85}
 .top{display:flex;justify-content:space-between;align-items:flex-start}
 .overall{background:rgb(255 255 255/.22);border-radius:10px;padding:2px 10px;font-size:13px}
 .overall b{font-size:20px}
