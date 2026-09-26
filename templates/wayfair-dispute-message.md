@@ -15,7 +15,7 @@ Request: <reverse the deduction / send the customer photos so we can investigate
 
 Thank you,
 Zafar K.
-Support Team
+Ecom Manager
 Home Weavers Inc.
 ```
 
