@@ -34,3 +34,7 @@ Wayfair renames some collections on its listings. The customer sees our packagin
 | Our collection (packaging) | Wayfair listing name | Listing ID |
 |---|---|---|
 | Allure | Dobrinka Bath Rug | RBSD7856 |
+| Waterford (BWA) | Morissette 100% Cotton Contour Mat | FBWX1491 |
+
+Colour-name mismatch also seen: Waterford sage (part suffix CSA) carries a **"GREEN"** barcode sticker,
+while the listing option says **"Sage"** (deduction 62425410, 1 Oct 2026).
