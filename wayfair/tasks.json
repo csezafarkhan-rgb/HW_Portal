@@ -1,0 +1,265 @@
+{
+  "generated": "2026-10-06",
+  "note": "Live task board for the Wayfair portal. Edit this file to update it — the page reads it directly.",
+  "groups": [
+    {
+      "title": "Launch recovery — the 497 Not Live parts",
+      "blurb": "247 Waterford + 250 Essence combos launched 30 Sep and sat Not Live for five days with \"Missing Images\".",
+      "tasks": [
+        {
+          "id": "wf-497-images",
+          "title": "Get the 497 launched-but-not-live parts their images",
+          "status": "done",
+          "priority": "high",
+          "owner": "Zafar",
+          "started": "2026-10-01",
+          "closed": "2026-10-05",
+          "summary": "Both media imports failed on 1 Oct with 1,523 and 1,366 errors. Root cause found 5 Oct: the manufacturerPartId column was blank on every row. Re-imported with it populated and both went through.",
+          "result": "Waterford Complete 2,716/2,716 with 0 errors. Essence Partially Complete 2,700/2,750 — the 50 rejects were shared images already present. All 497 now Live and rendering on site.",
+          "evidence": [
+            "Partner Home \"Not Live\" and \"Launched But Not Live\" cards both went from 497 to zero.",
+            "PDP W123832291 loads: $75.99 was $114.99, 67 images, Add to Cart.",
+            "PDP W123833029 loads: $73.99 was $89.99, 77 images, Add to Cart.",
+            "Control test on a long-live product confirmed the earlier 404s were real, not a broken check."
+          ],
+          "updates": [
+            { "date": "2026-10-01", "text": "Two Product Media imports failed. 1,523 errors (Waterford), 1,366 (Essence). Import Center offered no error download." },
+            { "date": "2026-10-02", "text": "Raised ENRICH-1492404 and ENRICH-1492407 asking Wayfair to load the images for us." },
+            { "date": "2026-10-05", "text": "Ruled out the image URLs: all 1,061 unique Dropbox links return HTTP 200 image/jpeg, 2500x2500, 0.5-4 MB, no throttling across 40 rapid fetches." },
+            { "date": "2026-10-05", "text": "One-SKU test isolated the cause. A file with manufacturerPartId blank returns \"No Valid Changes\", 0 submitted. The identical file with the ID populated imported 11/11 clean." },
+            { "date": "2026-10-05", "text": "Re-imported both batches. 5,416 of 5,466 rows accepted." },
+            { "date": "2026-10-05", "text": "PDPs 404'd for about two hours after going Live, then came good — storefront propagation lag, not a fault." }
+          ],
+          "pending": [],
+          "next": []
+        },
+        {
+          "id": "wf-1492404",
+          "title": "ENRICH-1492404 — Waterford media ticket",
+          "status": "waiting",
+          "priority": "low",
+          "owner": "Wayfair",
+          "summary": "Raised 2 Oct asking Wayfair to load images for 247 parts across FBWX2182/83/84. No longer needed — we fixed it ourselves.",
+          "updates": [
+            { "date": "2026-10-02", "text": "Raised. Auto-estimate 26.86 hours." },
+            { "date": "2026-10-05", "text": "Taken over by Wayfair's Media Projects team, turnaround quoted as greater than 2-3 business days." },
+            { "date": "2026-10-05", "text": "Follow-up posted asking for a target date." },
+            { "date": "2026-10-05", "text": "Closure requested — explained the manufacturerPartId cause and that all 247 are Live and showing on site." }
+          ],
+          "pending": ["Wayfair to close the ticket."],
+          "next": [],
+          "links": [{ "label": "Open ticket", "url": "https://partners.wayfair.com/d/ticket-inbox/ticketing/ENRICH-1492404" }]
+        },
+        {
+          "id": "wf-1492407",
+          "title": "ENRICH-1492407 — Essence media ticket",
+          "status": "waiting",
+          "priority": "low",
+          "owner": "Wayfair",
+          "summary": "Raised 2 Oct for 250 parts across FBWX2176-2181. Also no longer needed.",
+          "updates": [
+            { "date": "2026-10-02", "text": "Raised. The \"More details\" box went out containing only the word \"Error\" — the real description sat in \"Associate your files\"." },
+            { "date": "2026-10-05", "text": "Taken over by Media Projects, same 2-3 day quote." },
+            { "date": "2026-10-05", "text": "Closure requested — all 250 Live and showing on site." }
+          ],
+          "pending": ["Wayfair to close the ticket."],
+          "next": [],
+          "links": [{ "label": "Open ticket", "url": "https://partners.wayfair.com/d/ticket-inbox/ticketing/ENRICH-1492407" }]
+        },
+        {
+          "id": "wf-1492821",
+          "title": "ENRICH-1492821 — PMP tool: error download and template guidance",
+          "status": "waiting",
+          "priority": "high",
+          "owner": "Wayfair",
+          "summary": "The ticket that actually matters. Two asks, both about stopping this recurring.",
+          "asks": [
+            "Enable the Import Center error download. The page says to \"use the download error function from the Actions column\" but that column only contains a delete icon — re-checked on a Partially Complete import, still absent. Had it worked on 1 Oct we would have found the cause in minutes rather than five days and three tickets.",
+            "Correct the template guidance. manufacturerPartId is labelled Conditional, required for UPDATE and DELETE. It is clearly required for UPLOAD too, and a blank value fails the row silently."
+          ],
+          "updates": [
+            { "date": "2026-10-05", "text": "Raised with both failed files and a live Import Center screenshot attached." },
+            { "date": "2026-10-05", "text": "Updated to say we found the cause ourselves and narrowed the ask to the two items above." }
+          ],
+          "pending": ["Wayfair response on both asks."],
+          "next": ["If the size-chip problem below is confirmed as a Wayfair-side bug, add it to this ticket."],
+          "links": [{ "label": "Open ticket", "url": "https://partners.wayfair.com/d/ticket-inbox/ticketing/ENRICH-1492821" }]
+        },
+        {
+          "id": "wf-1492409",
+          "title": "ENRICH-1492409 — replace re-shot images on 208 parts / 11 listings",
+          "status": "waiting",
+          "priority": "medium",
+          "owner": "Wayfair",
+          "summary": "Separate from the 497. Asks Wayfair to remove existing images and replace them with the re-shot set.",
+          "updates": [
+            { "date": "2026-09-30", "text": "Raised." },
+            { "date": "2026-10-05", "text": "Escalated to the Merchandising Supplier Success team (Hue Nguyen), described as the highest level of support for enrichment issues. Eight comments deep." }
+          ],
+          "pending": ["Still unresolved after six days."],
+          "next": ["Consider doing it ourselves — we now know the manufacturerPartId route works for both UPLOAD and DELETE."],
+          "links": [{ "label": "Open ticket", "url": "https://partners.wayfair.com/d/ticket-inbox/ticketing/ENRICH-1492409" }]
+        }
+      ]
+    },
+    {
+      "title": "Essence listing quality",
+      "blurb": "Problems found while checking the 497 after they went live.",
+      "tasks": [
+        {
+          "id": "wf-size-labels",
+          "title": "Fix misleading size labels on the Essence combos",
+          "status": "in_progress",
+          "priority": "high",
+          "owner": "Zafar",
+          "started": "2026-10-05",
+          "summary": "Labels like \"3 Piece + Contour\" implied four items when the set contains three — the contour is one of the three. Renamed all 310 Essence combo labels to the \"N-Piece Set (Including Contour & Lid)\" form.",
+          "result": "Import Complete 310/310, 0 errors. Partner Home stores the new names. The PDP's selected variant label shows them. The size option chips below still show the old names.",
+          "evidence": [
+            "Verified against Total Number of Pieces Included and Pieces Included on every row — 140 of 210 labels overstated the count.",
+            "Waterford was checked too and is clean: 0 of 152 wrong.",
+            "FBWX2176 uses \"Pair of 24x40\" with total 2, which is accurate.",
+            "Checked the rename creates no duplicate labels in any listing+colour combination."
+          ],
+          "updates": [
+            { "date": "2026-10-05", "text": "Spotted on SKU W123832280. Confirmed the images are correct — downloaded the lead file and counted three pieces, matching the title." },
+            { "date": "2026-10-05", "text": "Wording agreed as \"N-Piece Set (Including Contour & Lid)\", with \"2-Piece Set (Contour & Lid)\" on the FBWX2180 two-piece, which contains only those two items." },
+            { "date": "2026-10-05", "text": "Imported Complete 310/310." },
+            { "date": "2026-10-06", "text": "17 hours on, the option chips still show old names on FBWX2179 and FBWX2180. Re-checked with a cache-buster on the URL — unchanged." },
+            { "date": "2026-10-06", "text": "Partner Home confirmed storing the new names, so the data is right at source." }
+          ],
+          "pending": [
+            "PDP size chips still render the old labels on all affected listings.",
+            "Unclear whether this is a Wayfair storefront cache or a second record the \"Option Part Association\" import does not write."
+          ],
+          "next": [
+            "Export the \"Bulk Add New Variant Groups\" template and inspect it without importing — check whether it carries existing option IDs (a rename) or expects new ones (which would duplicate every size choice).",
+            "If it would duplicate, raise it on ENRICH-1492821 instead. Do not run a second import on a guess."
+          ],
+          "files": ["Essence variant labels FIX v2.xlsx"]
+        },
+        {
+          "id": "wf-not-pictured",
+          "title": "\"Not pictured: Linen\" — colour variant showing another colour's photo",
+          "status": "not_started",
+          "priority": "high",
+          "owner": "Zafar",
+          "summary": "On an Essence combo listing the page shows a Blue set while Linen is selected, and tells the shopper \"Not pictured: Linen\". The wrong product on screen at the point of purchase.",
+          "updates": [
+            { "date": "2026-10-05", "text": "Spotted on W123832280 while checking the size labels. Not investigated since." }
+          ],
+          "pending": ["Scope unknown — how many colour variants across the 250 combos are affected."],
+          "next": [
+            "Export current media for the 250 combos and find variants with no image of their own.",
+            "Cross-check against the 50 rows the combo import rejected."
+          ]
+        },
+        {
+          "id": "wf-essence-singles-media",
+          "title": "Load the new photography onto the 60 Essence singles",
+          "status": "done",
+          "priority": "medium",
+          "owner": "Zafar",
+          "closed": "2026-10-05",
+          "summary": "60 single SKUs on FBWX2175, 11 images each, URLs sourced from HW_PIM 2026.xlsx sheet \"Essence (new) Micro Bath Rug\".",
+          "result": "Partially Complete — 660 rows, 308 submitted, 352 rejected. The rejects are duplicates: these parts were already live and already carried the shared shots (MULTICOLOR, MULTISIZE, COLORVARY). All 60 new lead images landed.",
+          "updates": [
+            { "date": "2026-10-05", "text": "Image URLs were not in any Homeweavers catalogue export — found them in the PIM instead." },
+            { "date": "2026-10-05", "text": "Checked for the header-shift defect seen on the earlier Essence PIM. Not present: all 660 filenames match their column." },
+            { "date": "2026-10-05", "text": "Imported. 8 of 11 new images present on 53 parts, 7 of 11 on the other 7." }
+          ],
+          "pending": [],
+          "next": [],
+          "files": ["Essence SINGLES 60 - Media Upload.xlsx"]
+        },
+        {
+          "id": "wf-essence-singles-cleanup",
+          "title": "Remove stale images from the Essence singles",
+          "status": "done",
+          "priority": "medium",
+          "owner": "Zafar",
+          "closed": "2026-10-05",
+          "summary": "22 old assets across 20 parts — ten BMESS2440*_LIV files superseded by the new 2032 shots, one GUID-named GREY_F1 shared across five grey parts, and seven other GUID-prefixed duplicates.",
+          "result": "Complete 22/22, 0 errors. None of the newly uploaded assets were touched.",
+          "updates": [
+            { "date": "2026-10-05", "text": "First attempt failed: \"Action type not specified\", 0 imported. Cause was deleting rows from the export, which broke the isMediaChanged formulas that reference their own row." },
+            { "date": "2026-10-05", "text": "Rebuilt by keeping all 571 rows and setting Action only on the 22 targets. Imported clean." }
+          ],
+          "pending": [],
+          "next": [],
+          "files": ["Essence singles - DELETE stale media.xlsx"]
+        }
+      ]
+    },
+    {
+      "title": "Not started",
+      "blurb": "Raised but deliberately parked.",
+      "tasks": [
+        {
+          "id": "wf-impression-singles",
+          "title": "Impression singles — remove old images, load the new set",
+          "status": "not_started",
+          "priority": "medium",
+          "owner": "Zafar",
+          "summary": "30 single SKUs on FBWX2114. New photography exists in HW_PIM 2026.xlsx sheet \"Impression Micro Bath Rug\" (10 shots per SKU).",
+          "pending": [
+            "Needs a Bulk Upload Media export of FBWX2114 to get the existing Asset IDs — deletions cannot be built without them."
+          ],
+          "next": [
+            "Upload the replacements first, confirm they render, then delete the old assets.",
+            "Do not delete first. All 30 are Live and trading — the listing carries 97 reviews and 18,001 impressions, and recent revenue includes BMIM2440NV $156.50, BMIM1724LI $99.02, BMIM2032GR $96.59. A product with no images cannot stay Live."
+          ],
+          "files": ["Essence singles + Impression singles - media prep.xlsx"]
+        },
+        {
+          "id": "wf-waterford-audit",
+          "title": "Waterford — stale media audit",
+          "status": "not_started",
+          "priority": "low",
+          "owner": "Zafar",
+          "summary": "The same audit run on the Essence singles, applied to the 247 Waterford combos.",
+          "pending": ["Parked by instruction until Essence is confirmed."],
+          "next": ["Export current media for the Waterford parts and compare against what we supplied."]
+        }
+      ]
+    },
+    {
+      "title": "Commercial",
+      "tasks": [
+        {
+          "id": "wf-way-day",
+          "title": "Way Day — get the 497 into the October event",
+          "status": "in_progress",
+          "priority": "high",
+          "owner": "Zafar",
+          "due": "2026-10-15",
+          "summary": "The 497 could not be entered into any promotion while they were Not Live. They are live now, so they are eligible.",
+          "pending": ["Curation deadline is 15 October."],
+          "next": ["Add the 497 to the Way Day submission before the deadline."]
+        }
+      ]
+    }
+  ],
+  "learned": [
+    {
+      "title": "manufacturerPartId is required for UPLOAD, not just UPDATE and DELETE",
+      "text": "A blank value fails every row with no usable message — status reads \"No Valid Changes\" or \"Failed\". Get the IDs from Product Management → Export All → Update Product Identifiers and paste them into column E before any media import."
+    },
+    {
+      "title": "The Dropbox image URLs are fine and reusable",
+      "text": "Links of the form dl.dropboxusercontent.com/scl/fo/.../FILE.jpg?rlkey=...&dl=0 work. The dl=0 suffix is not a problem on that host, uppercase .JPG is fine, and reusing one URL across many parts is fine — a single size-chart image served all 250 Essence combos."
+    },
+    {
+      "title": "Never delete rows from a PMP export",
+      "text": "The isMediaChanged column is a formula referencing its own row. Deleting rows breaks those references and the whole import is rejected. Keep every row and set Action only on the ones you want to change."
+    },
+    {
+      "title": "\"Lead Eligible\" is a capability flag, not the lead assignment",
+      "text": "It reads Yes on almost every image including swatches. Multiple lead-eligible images is normal and is not a defect."
+    },
+    {
+      "title": "Catalogue status and the storefront are not the same thing",
+      "text": "Products showed Live in Partner Home about two hours before their PDPs stopped returning 404. Check the customer page, not just the dashboard — and run a control on a known-good product so a site-wide problem is not mistaken for a broken check."
+    }
+  ]
+}

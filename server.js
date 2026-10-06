@@ -9,6 +9,7 @@ const { marked } = require('marked');
 const PORTALS = require('./portals');
 const ANALYZERS = require('./analyzers');
 const UNPURCHASABLE = require('./unpurchasable');
+const TASKS = require('./tasks');
 
 const PORT = process.env.PORT || 3000;
 const USER = process.env.APP_USER;
@@ -543,11 +544,30 @@ function portalPage(p) {
   const reports = p.reports.map(f =>
     `<a class="card" href="/${encodeURIComponent(p.slug)}/${encodeURIComponent(f)}">${escapeHtml(titleCase(f.replace(/\.(md|html)$/i, '')))}</a>`
   ).join('');
+  const tasks = TASKS.loadTasks(ROOT, p.slug);
+  const tasksCard = tasks ? (() => {
+    const c = TASKS.countTasks(tasks);
+    const open = c.in_progress + c.blocked + c.waiting + c.not_started;
+    const bits = [
+      c.in_progress && `<span class="tkp warn"><i class="dot warn"></i>${c.in_progress} in progress</span>`,
+      c.blocked && `<span class="tkp bad"><i class="dot bad"></i>${c.blocked} blocked</span>`,
+      c.waiting && `<span class="tkp warn"><i class="dot warn"></i>${c.waiting} waiting on Wayfair</span>`,
+      c.not_started && `<span class="tkp none"><i class="dot none"></i>${c.not_started} not started</span>`,
+      c.done && `<span class="tkp good"><i class="dot good"></i>${c.done} done</span>`,
+    ].filter(Boolean).join('');
+    return `<a class="tkbanner" href="/${encodeURIComponent(p.slug)}/tasks">
+<div class="tkb-main"><strong>Current work — ${open} open</strong>
+<div class="muted">Every job in flight, with its full history: what was tried, what it is waiting on and what happens next.</div>
+<div class="tkpills">${bits}</div></div>
+<span class="tkb-go">Open board →</span></a>`;
+  })() : '';
   const unpurch = UNPURCHASABLE.loadUnpurchasable(ROOT, p.slug);
-  const tools = unpurch ? `<h2>Tools</h2><a class="card" href="/${encodeURIComponent(p.slug)}/unpurchasable">
+  const unpurchCard = unpurch ? `<a class="card" href="/${encodeURIComponent(p.slug)}/unpurchasable">
 <strong>Unpurchasable parts — discontinue, reactivate or restock (${unpurch.total})</strong>
 <div class="muted">Every part Wayfair flags as unpurchasable, with live stock, 90-day sales, reviews and a recommended action. Mark the ones to discontinue or reactivate and export Wayfair's upload file.</div></a>` : '';
+  const tools = unpurchCard ? `<h2>Tools</h2>${unpurchCard}` : '';
   return `${hero(p, escapeHtml(p.channel))}
+${tasksCard}
 <div class="summary">${ring(score, true)}<div><strong>Overall portal score</strong><div class="muted">${score !== null ? `${band(score).label} · average of ${Object.keys(analysis.analyzers).length} analyzers` : p.started ? 'Analysis in progress' : 'Analysis not started yet'}${meta ? `<br>${meta}` : ''}</div></div>
 <div class="counts"><span class="good">${counts.pass} OK</span><span class="warn">${counts.warn} attention</span><span class="bad">${counts.fail} problems</span><span class="none">${counts.total - counts.pass - counts.warn - counts.fail} not checked</span></div></div>
 ${growthPlan(p)}
@@ -759,7 +779,8 @@ div.check,.check>summary{display:grid;grid-template-columns:22px 1fr auto;gap:4p
 .hero h1{margin:0;font-size:26px}
 .hero .mono{width:52px;height:52px;font-size:18px}
 @media (prefers-reduced-motion:reduce){.portal{transition:none}.portal:hover{transform:none}}
-${UNPURCHASABLE.CSS}</style></head>
+${UNPURCHASABLE.CSS}
+${TASKS.CSS}</style></head>
 <body><header><a href="/">HW Portals</a><div class="hright">${THEME_TOGGLE}<form method="post" action="/logout"><button type="submit">Sign out</button></form></div></header><main>${body}</main></body></html>`;
 }
 
@@ -835,6 +856,13 @@ const server = http.createServer(async (req, res) => {
     const gzip = /\bgzip\b/.test(req.headers['accept-encoding'] || '');
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'private, no-cache', ...(gzip && { 'Content-Encoding': 'gzip' }) });
     return res.end(gzip ? zlib.gzipSync(raw) : raw);
+  }
+
+  // Task board: what is being worked on, what it is waiting for, what happens next.
+  if (parts.length === 2 && parts[1] === 'tasks') {
+    const d = TASKS.loadTasks(ROOT, portal.slug);
+    if (!d) return send(res, 404, page('Not found', '<h1>No task board for this portal yet</h1>'));
+    return send(res, 200, page(`Current work · ${portal.name}`, TASKS.tasksPage(portal, d, { escapeHtml, hero })));
   }
 
   // Zero-stock review list, where the user picks which parts to discontinue.
