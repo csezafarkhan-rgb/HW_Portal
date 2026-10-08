@@ -19,6 +19,21 @@ Ecom Manager
 Home Weavers Inc.
 ```
 
+**Update 8 Oct 2026:** treat the block above as a checklist of facts, not a form to paste. Write each
+dispute as a short, human message (3–5 plain sentences), worded differently each time — never the same
+format on every dispute. Example:
+
+```
+Hi team,
+This is about deduction 62425410 on PO CS682443126. The customer got the right mat — it is our
+Waterford 20x20 in sage, the sticker just says "Green". Could you please reverse this one?
+
+Thank you,
+Zafar K.
+Ecom Manager
+Home Weavers Inc.
+```
+
 ## Notes
 - Disputes must be filed in the **Deductions tool within 14 days** of the deduction appearing. After it
   settles, use Payment Details instead.
